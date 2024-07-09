@@ -25,16 +25,6 @@ start:
     call newline
     jmp terminal
 
-l1:
-    mov al, '1'
-    call print_chr
-    jmp halt
-
-l2:
-    mov al, '2'
-    call print_chr
-    jmp halt
-
 halt:
     nop
     jmp halt
