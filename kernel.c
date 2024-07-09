@@ -28,6 +28,13 @@ char getc() {
     );
 }
 
+short m_strcmp(char *str1, char *str2) {
+    while (*str1 && (*str1 == *str2)) {
+        str1++;
+        str2++;
+    }
+    return *(unsigned char *)str1 - *(unsigned char *)str2;
+}
 
 void main(void) {
     char *prompt;
@@ -41,12 +48,10 @@ void main(void) {
             if (prompt[i] == NEWLINE) break;
             i++;
         }
-        prompt[i] = 0;
-        for (i = 0; prompt[i] != 0; i++) {
-            printc(prompt[i]);
-        }
-        if (prompt == "version") {
+
+        if (m_strcmp(prompt, "version") != 0) {
             prints(VERSION);
+
         }
         nl();
     }
