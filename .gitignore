@@ -3,3 +3,8 @@
 /kernel.o
 /kernel_asm.o
 /os-image.bin
+ManuOS-asm/kernel.bin
+ManuOS-asm/kernel.bin
+ManuOS-asm/kernel.bin
+ManuOS-asm/os-image.bin
+ManuOS-asm/puppy_kernel.o
