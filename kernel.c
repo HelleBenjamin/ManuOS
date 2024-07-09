@@ -1,13 +1,21 @@
+
+#define NEWLINE 0x0d
+#define VERSION "ManuOS 0.0.1-puppy"
+
 extern void printchr();
 extern void getchar();
 extern void nl();
 
-#define NEWLINE 0x0d
-
-
 void printc(char c) {
     asm("mov %al, 0x95\n\t");
     printchr();
+}
+
+void prints(char *s) {
+    while (*s) {
+        printc(*s);
+        s++;
+    }
 }
 
 char getc() {
@@ -22,7 +30,7 @@ char getc() {
 
 
 void main(void) {
-    char prompt[20];
+    char *prompt;
     int i = 0;
     while (1){
         printc('>');
@@ -33,7 +41,13 @@ void main(void) {
             if (prompt[i] == NEWLINE) break;
             i++;
         }
-        printc('O');
-
+        prompt[i] = 0;
+        for (i = 0; prompt[i] != 0; i++) {
+            printc(prompt[i]);
+        }
+        if (prompt == "version") {
+            prints(VERSION);
+        }
+        nl();
     }
 }
