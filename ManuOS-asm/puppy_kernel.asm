@@ -1,13 +1,18 @@
-
 bits 16
 section .data
     welcome db 'Welcome to ManuOS(kernel mode)', 0
-    version dw 'ManuOS 0.0.1-puppy', 0
+    version db 'ManuOS 0.0.1-puppy', 0
     help db 'Commands v(version), h(help), t(text editor)', 0
+    not_found db 'Command not found', 0
+    txt_msg db 'Text editor', 0
     msg db 'Hello, World!', 0
     manu db 'Manu', 0
     cm1 db 'version', 0
     cm2 db 'help', 0
+
+section .bss
+    cmd_buffer resb 0x50
+
 section .text
     global start
 
@@ -16,20 +21,7 @@ start:
     mov bx, welcome
     call print_str
     call newline
-    mov bx, cm1
-    mov dx, cm1
-    call cmp_str
-    je l2
-    jne l1
-
-l1:
-    mov al, '1'
-    call print_chr
-    jmp halt
-l2:
-    mov al, '2'
-    call print_chr
-    jmp halt
+    jmp terminal
 
 halt:
     nop
@@ -38,28 +30,54 @@ halt:
 terminal:
     mov al, '>'
     call print_chr
+    mov di, cmd_buffer
     .tloop:
         call read
+        cmp al, 0
+        je halt ; If no more input, stop the program
         call print_chr
+        mov [di], al
+        inc di
         cmp al, 0x0d
-        je handle_commands
-        jmp .tloop
-handle_commands:
+        jne .tloop
 
+    mov byte [di], 0 ; Null-terminate the command
+    call handle_commands
+    jmp terminal
+
+handle_commands:
+    mov bx, cmd_buffer
+    mov dx, cm1
+    call cmp_str
+    jne .not_cm1 ; If not equal, check the next command
+    call version_command
+    ret
+.not_cm1:
+    mov bx, cmd_buffer
+    mov dx, cm2
+    call cmp_str
+    jne .not_cm2 ; If not equal, check the next command
+    call help_command
+    ret
+.not_cm2:
+    mov bx, not_found
+    call print_str
+    call newline
+    ret
 
 version_command:
-    mov al, 'v'
-    call print_chr
+    call newline
     mov bx, version
     call print_str
     call newline
-    jmp terminal
+    ret
 
 help_command:
+    call newline
     mov bx, help
     call print_str
     call newline
-    jmp terminal
+    ret
 
 newline:
     mov al, 0x0a
@@ -71,7 +89,6 @@ newline:
 ; TEXT EDITOR
 init_text_editor:
     call clrscr
-    txt_msg db 'Text editor', 0
     mov bx, txt_msg
     call print_str
     call newline
@@ -85,24 +102,25 @@ text_editor:
 
 if_enter:
     cmp al, 0x0d
-    jne text_editor
+    jne .no_enter
     mov al, 0x0a
     call print_chr
     mov al, 0x0d
     call print_chr
+.no_enter:
     ret
 
 if_backspace:
     cmp al, 0x08
-    jne text_editor
+    jne .no_backspace
     mov al, 0x08
     call print_chr
+.no_backspace:
     ret
 
-read: ;Parameters: none Returns: al = character
+read: ; Parameters: none Returns: al = character
     mov ah, 0x00
     int 0x16
-    mov bl, al
     ret
 
 print_chr: ; Parameters: al = character Returns: none
@@ -129,9 +147,10 @@ clrscr: ; Parameters: none Returns: none
     int 0x10
     ret
 
-cmp_str: ; Parameters: bx = first pointer to string, dx = second pointer to string, cx = length Returns: zf = 1 if equal
+cmp_str: ; Parameters: bx = first pointer to string, dx = second pointer to string Returns: zf = 1 if equal
+    cld
     mov si, bx
     mov di, dx
-    mov bx, cx
+    mov cx, 0x50 ; Max length for comparison, adjust as necessary
     repe cmpsb
     ret
