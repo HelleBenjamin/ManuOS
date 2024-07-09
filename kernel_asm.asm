@@ -19,6 +19,8 @@ global getchar
 getchar:
     mov ah, 0x00
     int 0x16
+    cmp al, 0x0d
+    je nl
     ret
 global nl
 nl:
@@ -26,6 +28,7 @@ nl:
     call printchr
     mov al, 0x0d
     call printchr
+    mov al, 0x0d ;inform the kernel that a new line has been printed
     ret
 section .text
 section .bss

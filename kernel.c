@@ -2,6 +2,8 @@ extern void printchr();
 extern void getchar();
 extern void nl();
 
+#define NEWLINE 0x0d
+
 
 void printc(char c) {
     asm("mov %al, 0x95\n\t");
@@ -25,12 +27,13 @@ void main(void) {
     while (1){
         printc('>');
         i = 0;
-        while(prompt[i] != '\n') {
+        while (1) {
             prompt[i] = getc();
             printchr(prompt[i]);
+            if (prompt[i] == NEWLINE) break;
             i++;
         }
-        prompt[i] = '\n'; // Add newline character at the end
-        printc('\n');
+        printc('O');
+
     }
 }
