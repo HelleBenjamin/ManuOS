@@ -1,22 +1,41 @@
 
 #define NEWLINE 0x0d
 #define VERSION "ManuOS 0.0.1-puppy"
+#define HELP_MSG "Commands: version, help"
 
-extern void printchr();
 extern void getchar();
 extern void nl();
 
-
 void printc(char c) {
-    asm("mov %al, 0x95\n\t");
-    printchr();
+    asm volatile(
+        "movb %b0, %%al\n\t"
+        "jmp 1f\n\t"
+        ".byte 0x9c\n\t"
+        "1:\n\t"
+        "movb $0x0e, %%ah\n\t"
+        "int $0x10"
+        :
+        : "a"(c)
+        : "cc"
+    );
 }
 
 void prints(char *s) {
-    while (*s) {
-        printc(*s);
-        s++;
-    }
+    int len = 0;
+    __asm__ volatile(
+        "1:\n\t"
+        "lodsb\n\t"
+        "testb %%al, %%al\n\t"
+        "jz 2f\n\t"
+        "movb $0x0e, %%ah\n\t"
+        "int $0x10\n\t"
+        "incl %0\n\t"
+        "jmp 1b\n\t"
+        "2:\n\t"
+        : "=S"(s), "=c"(len)
+        : "0"(s)
+        : "cc"
+    );
 }
 
 char getc() {
@@ -49,12 +68,16 @@ void main(void) {
                 prompt[i] = '\0';
                 break;
             }
-            printchr(prompt[i]);
+            printc(prompt[i]);
             i++;
         }
 
         if (m_strcmp(prompt, "version") == 0) {
-            prints(VERSION);
+            prints("ManuOS " VERSION "\n");
+            nl();
+        } else if (m_strcmp(prompt, "help") == 0) {
+            prints(HELP_MSG);
+            nl();
         }
     }
 }

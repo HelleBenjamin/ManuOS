@@ -7,7 +7,7 @@ start:
     mov ds, ax
     mov es, ax
     mov ss, ax
-    mov sp, 0x7C00
+    mov sp, 0x7c00
 
     ; Load the kernel from disk
     mov ah, 0x02
@@ -30,6 +30,9 @@ start:
     jmp 0x0000:0x8000
 
 disk_error:
+    mov al, 'E'
+    mov ah, 0x0e
+    int 0x10
     hlt
 
 times 510 - ($ - $$) db 0
