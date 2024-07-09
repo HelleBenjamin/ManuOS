@@ -2,13 +2,15 @@ bits 16
 section .data
     welcome db 'Welcome to ManuOS(kernel mode)', 0
     version db 'ManuOS 0.0.1-puppy', 0
-    help db 'Commands v(version), h(help), t(text editor)', 0
-    not_found db 'Command not found', 0
-    txt_msg db 'Text editor', 0
+    help db 'Commands: m(manu), v(version), h(help), t(text editor)', 0
+    not_found db 'Command not found: ', 0
+    txt_msg db 'Text editor v1.2 ', 0
+    escmsg db 'Press ESC to exit', 0
     msg db 'Hello, World!', 0
     manu db 'Manu', 0
     cm1 db 'version', 0
     cm2 db 'help', 0
+    cm3 db 'txt', 0
 
 section .bss
     cmd_buffer resb 0x50
@@ -22,6 +24,16 @@ start:
     call print_str
     call newline
     jmp terminal
+
+l1:
+    mov al, '1'
+    call print_chr
+    jmp halt
+
+l2:
+    mov al, '2'
+    call print_chr
+    jmp halt
 
 halt:
     nop
@@ -46,38 +58,43 @@ terminal:
     jmp terminal
 
 handle_commands:
-    mov bx, cmd_buffer
-    mov dx, cm1
-    call cmp_str
-    jne .not_cm1 ; If not equal, check the next command
-    call version_command
-    ret
-.not_cm1:
-    mov bx, cmd_buffer
-    mov dx, cm2
-    call cmp_str
-    jne .not_cm2 ; If not equal, check the next command
-    call help_command
-    ret
-.not_cm2:
+    mov bl, 'm'
+    cmp bl, [cmd_buffer]
+    je .manu
+    mov bl, 'v'
+    cmp bl, [cmd_buffer]
+    je .version_command
+    mov bl, 'h'
+    cmp bl, [cmd_buffer]
+    je .help_command
+    mov bl, 't'
+    cmp bl, [cmd_buffer]
+    je init_text_editor
     mov bx, not_found
     call print_str
-    call newline
-    ret
-
-version_command:
-    call newline
-    mov bx, version
+    mov bx, cmd_buffer
     call print_str
     call newline
     ret
 
-help_command:
-    call newline
-    mov bx, help
-    call print_str
-    call newline
-    ret
+    .manu:
+        call newline
+        mov bx, manu
+        call print_str
+        call newline
+        ret
+    .version_command:
+        call newline
+        mov bx, version
+        call print_str
+        call newline
+        ret
+    .help_command:
+        call newline
+        mov bx, help
+        call print_str
+        call newline
+        ret
 
 newline:
     mov al, 0x0a
@@ -91,32 +108,30 @@ init_text_editor:
     call clrscr
     mov bx, txt_msg
     call print_str
+    mov bx, escmsg
+    call print_str
     call newline
-    jmp text_editor
 text_editor:
     call read
     call print_chr
-    call if_enter
-    call if_backspace
+    call check_txt_functions
     jmp text_editor
 
-if_enter:
-    cmp al, 0x0d
-    jne .no_enter
-    mov al, 0x0a
-    call print_chr
-    mov al, 0x0d
-    call print_chr
-.no_enter:
-    ret
-
-if_backspace:
-    cmp al, 0x08
-    jne .no_backspace
-    mov al, 0x08
-    call print_chr
-.no_backspace:
-    ret
+check_txt_functions:
+    .if_esc:
+        cmp al, 0x1b
+        jne .if_enter
+        call clrscr
+        jmp terminal
+    .if_enter:
+        cmp al, 0x0d
+        jne .no_backspace
+        mov al, 0x0a
+        call print_chr
+        mov al, 0x0d
+        call print_chr
+        .no_backspace:
+            ret
 
 read: ; Parameters: none Returns: al = character
     mov ah, 0x00
@@ -129,28 +144,22 @@ print_chr: ; Parameters: al = character Returns: none
     ret
 
 print_str: ; Parameters: bx = pointer to string Returns: none
+    push bx
     mov ah, 0x0e
-print_str_loop:
-    mov al, [bx]
-    cmp al, 0
-    je end_print_str
-    int 0x10
-    inc bx
-    jmp print_str_loop
+    .print_str_loop:
+        mov al, [bx]
+        cmp al, 0
+        je .end_print_str
+        int 0x10
+        inc bx
+        jmp .print_str_loop
 
-end_print_str:
-    ret
+    .end_print_str:
+        pop bx
+        ret
 
 clrscr: ; Parameters: none Returns: none
     mov ah, 0x00
     mov al, 0x03
     int 0x10
-    ret
-
-cmp_str: ; Parameters: bx = first pointer to string, dx = second pointer to string Returns: zf = 1 if equal
-    cld
-    mov si, bx
-    mov di, dx
-    mov cx, 0x50 ; Max length for comparison, adjust as necessary
-    repe cmpsb
     ret

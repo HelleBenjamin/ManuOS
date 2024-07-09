@@ -11,16 +11,17 @@ SECTIONS
         *(.text)
     }
 
-    /* The .data section, which contains initialized data */
-    .data :
-    {
-        *(.data)
-    }
-
     /* The .bss section, which contains uninitialized data */
     .bss :
     {
         *(.bss)
         *(COMMON)
     }
+
+    /* The .data section, which contains initialized data */
+    .data :
+    {
+        *(.data)
+    }
+
 }
