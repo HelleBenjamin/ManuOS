@@ -6,6 +6,7 @@ extern void printchr();
 extern void getchar();
 extern void nl();
 
+
 void printc(char c) {
     asm("mov %al, 0x95\n\t");
     printchr();
@@ -44,15 +45,16 @@ void main(void) {
         i = 0;
         while (1) {
             prompt[i] = getc();
+            if (prompt[i] == NEWLINE) {
+                prompt[i] = '\0';
+                break;
+            }
             printchr(prompt[i]);
-            if (prompt[i] == NEWLINE) break;
             i++;
         }
 
-        if (m_strcmp(prompt, "version") != 0) {
+        if (m_strcmp(prompt, "version") == 0) {
             prints(VERSION);
-
         }
-        nl();
     }
 }

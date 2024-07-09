@@ -30,5 +30,3 @@ nl:
     call printchr
     mov al, 0x0d ;inform the kernel that a new line has been printed
     ret
-section .text
-section .bss
