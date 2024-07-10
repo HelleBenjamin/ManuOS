@@ -133,8 +133,16 @@ wufpp_interpreter:
         mov bx, wppmsg
         call print_str
         call newline
+        mov di, wpp_buffer
     .interpreter_loop:
         call read
+        mov [di], al
+        inc di
         call print_chr
         jmp .interpreter_loop
+    .if_enter:
+        cmp al, 0x0d
+
+    interpret:
+        
     ret
