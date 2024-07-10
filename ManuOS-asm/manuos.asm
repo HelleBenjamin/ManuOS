@@ -38,12 +38,18 @@ terminal:
         call print_chr
         mov [di], al
         inc di
+        cmp al, 0x08
+        je .terminal_handle_backspace
         cmp al, 0x0d
         jne .tloop
-
     mov byte [di], 0 ; Null-terminate the command
     call handle_commands
     jmp terminal
+    .terminal_handle_backspace:
+        dec di
+        dec di
+        mov byte [di], 0
+        jmp .tloop
 
 handle_commands:
     mov bl, 'm'
