@@ -8,3 +8,12 @@ ManuOS-asm/kernel.bin
 ManuOS-asm/kernel.bin
 ManuOS-asm/os-image.bin
 ManuOS-asm/puppy_kernel.o
+ManuOS-asm/boot.bin
+ManuOS-asm/kernel.elf
+ManuOS-asm/manuos-image.bin
+ManuOS-asm/manuos.o
+ManuOS-C/boot.bin
+ManuOS-C/kernel_asm.o
+ManuOS-C/kernel.bin
+ManuOS-C/kernel.o
+ManuOS-C/os-image.bin

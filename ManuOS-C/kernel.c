@@ -7,35 +7,15 @@ extern void getchar();
 extern void nl();
 
 void printc(char c) {
-    asm volatile(
-        "movb %b0, %%al\n\t"
-        "jmp 1f\n\t"
-        ".byte 0x9c\n\t"
-        "1:\n\t"
-        "movb $0x0e, %%ah\n\t"
-        "int $0x10"
-        :
-        : "a"(c)
-        : "cc"
-    );
+    asm("mov %al, 0x95\n\t");
+    asm("call printchr\n\t");
 }
 
 void prints(char *s) {
-    int len = 0;
-    __asm__ volatile(
-        "1:\n\t"
-        "lodsb\n\t"
-        "testb %%al, %%al\n\t"
-        "jz 2f\n\t"
-        "movb $0x0e, %%ah\n\t"
-        "int $0x10\n\t"
-        "incl %0\n\t"
-        "jmp 1b\n\t"
-        "2:\n\t"
-        : "=S"(s), "=c"(len)
-        : "0"(s)
-        : "cc"
-    );
+    while (*s) {
+        printc(*s);
+        s++;
+    }
 }
 
 char getc() {
@@ -55,6 +35,8 @@ short m_strcmp(char *str1, char *str2) {
     }
     return *(unsigned char *)str1 - *(unsigned char *)str2;
 }
+
+void wpp_interpreter(void) {}
 
 void main(void) {
     char *prompt;
