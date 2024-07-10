@@ -9,6 +9,6 @@ ld -m elf_i386 -T link.ld -o kernel.elf puppy_kernel.o manuos.o
 
 objcopy -O binary kernel.elf kernel.bin
 
-cat boot.bin kernel.bin > os-image.bin
+cat boot.bin kernel.bin > manuos-image.bin
 
-qemu-system-i386 -fda os-image.bin
+qemu-system-i386 -fda manusos-image.bin

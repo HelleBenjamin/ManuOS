@@ -1,13 +1,12 @@
 bits 16
 section .data
-    welcome db 'Welcome to ManuOS(kernel mode)', 0
-    version db 'ManuOS 0.0.1-puppy', 0
+    version db 'ManuOS 0.0.1-puppy, Puppy-kernel 0.0.1', 0
     help db 'Commands: m(manu), v(version), h(help), t(text editor)', 0
     not_found db 'Command not found: ', 0
     txt_msg db 'Text editor v1.2 ', 0
     escmsg db 'Press ESC to exit', 0
     msg db 'Hello, World!', 0
-    manu db 'Manu', 0
+    manumsg db 'Manu', 0
     cm1 db 'version', 0
     cm2 db 'help', 0
     cm3 db 'txt', 0
@@ -68,8 +67,10 @@ handle_commands:
 
     .manu_command:
         call newline
-        mov bx, manu
+        mov bx, manumsg
         call print_str
+        mov al, 'M'
+        call print_chr
         call newline
         ret
     .version_command:

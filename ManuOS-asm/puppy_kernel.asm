@@ -1,6 +1,6 @@
 bits 16
 section .data
-    welcome db 'Welcome to ManuOS 0.0.1', 0
+    welcome db 'Welcome to ManuOS 0.0.1-alpha', 0
 section .bss
 section .text
     global start
@@ -42,7 +42,6 @@ print_chr: ; Parameters: al = character Returns: none
     ret
 
 print_str: ; Parameters: bx = pointer to string Returns: none
-    push bx
     mov ah, 0x0e
     .print_str_loop:
         mov al, [bx]
@@ -53,7 +52,6 @@ print_str: ; Parameters: bx = pointer to string Returns: none
         jmp .print_str_loop
 
     .end_print_str:
-        pop bx
         ret
 
 clrscr: ; Parameters: none Returns: none
