@@ -30,3 +30,11 @@ nl:
     call printchr
     mov al, 0x0d ;inform the kernel that a new line has been printed
     ret
+
+global cls
+
+cls:
+    mov ah, 0x00
+    mov al, 0x03
+    int 0x10
+    ret

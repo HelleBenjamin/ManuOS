@@ -8,6 +8,7 @@ section .data
     escmsg db 'Press ESC to exit', 0
     manumsg db 'Manu', 0
     wppmsg db 'Welcome to Wuf++ interpreter, press enter to run the code', 0
+    fmsg db 'Program finished, press enter to proceed', 0
 
 section .bss
     cmd_buffer resb 0x20
@@ -117,8 +118,7 @@ check_txt_functions:
             ret
 ; Wuf++ - Brainfuck like code interpreter
 ; Registers that are used:
-; al - main register
-; b
+; bl - main register
 ; + - increment register
 ; - - decrement register
 ; > - push register
@@ -134,15 +134,83 @@ wufpp_interpreter:
         call print_str
         call newline
         mov di, wpp_buffer
+        mov cx, 0x0000 ; Length of the code
+        mov bx, 0x0000 ; Main register
     .interpreter_loop:
         call read
         mov [di], al
         inc di
+        inc cx
         call print_chr
-        jmp .interpreter_loop
-    .if_enter:
         cmp al, 0x0d
-
-    interpret:
-        
-    ret
+        je .handle_enter
+        jne .interpreter_loop
+    .handle_enter:
+        call newline
+    .interpret:
+        mov di, [wpp_buffer] ;di = wpp_buffer
+        dec di
+        mov al, [di]
+        cmp di, cx
+        je .end_interpreter
+        cmp al, '+'
+        je .if_plus
+        cmp al, '-'
+        je .if_minus
+        cmp al, '>'
+        je .if_push
+        cmp al, '<'
+        je .if_pop
+        cmp al, '.'
+        je .if_print
+        cmp al, ','
+        je .if_read
+        cmp al, '['
+        je .if_jump_forward
+        cmp al, ']'
+        je .if_jump_back
+        jmp .interpret
+        .if_read:
+            .read_loop:
+                call read
+                cmp al, 0
+                je .read_loop
+            mov bl, al
+            ;call print_chr
+            jmp .interpret
+        .if_plus:
+            inc bl
+            jmp .interpret
+        .if_minus:
+            dec bl
+            jmp .interpret
+        .if_push:
+            push bx
+            jmp .interpret
+        .if_pop:
+            pop bx
+            jmp .interpret
+        .if_print:
+            mov al, bl
+            call print_chr
+            jmp .interpret
+        .if_jump_forward:
+            inc di
+            inc cx
+            jmp .interpret
+        .if_jump_back:
+            dec di
+            dec cx
+            jmp .interpret
+    .end_interpreter:
+        call newline
+        mov bx, fmsg
+        call print_str
+        mov al, bl
+        call print_chr
+        .l1:
+            call read
+            cmp al, 0x0d
+            jne .l1
+        call clrscr
+        ret

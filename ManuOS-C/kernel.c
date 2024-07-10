@@ -1,10 +1,11 @@
 
 #define NEWLINE 0x0d
 #define VERSION "ManuOS 0.0.1-puppy"
-#define HELP_MSG "Commands: version, help"
+#define HELP_MSG "Commands: version, help, wpp"
 
 extern void getchar();
 extern void nl();
+extern void cls();
 
 void printc(char c) {
     asm("mov %al, 0x95\n\t");
@@ -28,6 +29,16 @@ char getc() {
     );
 }
 
+char getch() {
+    char c = 0;
+    while (1) {
+        c = getc();
+        if (c != NEWLINE) {
+            break;
+        }
+    }
+}
+
 short m_strcmp(char *str1, char *str2) {
     while (*str1 && (*str1 == *str2)) {
         str1++;
@@ -35,8 +46,103 @@ short m_strcmp(char *str1, char *str2) {
     }
     return *(unsigned char *)str1 - *(unsigned char *)str2;
 }
+/* Wuf++ - Brainfuck like code interpreter
+; Registers that are used:
+; bl - main register
+; cx - pointer, not the program counter
+; + - increment main register
+; - - decrement main register
+; > - push main register
+; < - pop main register
+; . - print main register
+; , - read to the main register
+; [ - jump forward, by cx
+; ] - jump back, by cx
+; ! - invert main register
+; } - increment pointer
+; { - decrement pointer
+; ? - print pointer
+*/
 
-void wpp_interpreter(void) {}
+void wpp_interpreter(void) {
+    start:
+    cls();
+    char *wpp_buffer;
+    unsigned int i = 0;
+    prints("Welcome to Wuf++ interpreter, press enter to run the code");
+    nl();
+    while (1) {
+        i = 0;
+        while (1) {
+            wpp_buffer[i] = getc();
+            if (wpp_buffer[i] == NEWLINE) {
+                wpp_buffer[i] = '\0';
+                break;
+            }
+            printc(wpp_buffer[i]);
+            i++;
+        }
+        asm("mov %bx, 0x0");
+        asm("mov %cx, 0x0");
+        for (i = 0; wpp_buffer[i] != '\0'; i++) {
+            switch (wpp_buffer[i])
+            {
+            case '+':
+                asm("inc %bl");
+                break;
+            case '-':
+                asm("dec %bl");
+                break;
+            case '>':
+                asm("push %bx");
+                break;
+            case '<':
+                asm("pop %bx");
+                break;
+            case '.':
+                asm(
+                    "mov %al, %bl\n\t"
+                    "call printchr\n\t"
+                );
+                break;
+            case ',':
+                char c = getch();
+                asm(
+                    "nop"
+                    :
+                    : "bl"(c)
+                );
+                break;
+            case '[':
+                unsigned int j = 0;
+                asm(
+                    "nop"
+                    : "=cx"(j)
+                    :
+                );
+                i = i - j;
+                break;
+            case ']':
+                j = 0;
+                asm(
+                    "nop"
+                    : "=cx"(j)
+                    :
+                );
+                i = i + j;
+                break;
+            
+            default:
+                break;
+            }
+        }
+        nl();
+        prints("Code finished, press enter to run the code again");
+        getch();
+        break;
+    }
+    goto start;
+}
 
 void main(void) {
     char *prompt;
@@ -60,6 +166,8 @@ void main(void) {
         } else if (m_strcmp(prompt, "help") == 0) {
             prints(HELP_MSG);
             nl();
+        } else if (m_strcmp(prompt, "wpp") == 0) {
+            wpp_interpreter();
         }
     }
 }
