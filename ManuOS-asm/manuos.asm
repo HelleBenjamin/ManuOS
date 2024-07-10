@@ -1,8 +1,8 @@
 bits 16
 
 section .data
-    version db 'ManuOS 0.0.1-puppy, Puppy-kernel 0.0.1', 0
-    help db 'Commands: m(manu), v(version), h(help), t(text editor)', 0
+    version db 'ManuOS 0.0.1-alpha, Puppy-kernel 0.0.1', 0
+    help db 'Commands: m(manu), v(version), h(help), t(text editor), w(wuf++ interpreter)', 0
     not_found db 'Command not found: ', 0
     txt_msg db 'Text editor v1.2 ', 0
     escmsg db 'Press ESC to exit', 0
@@ -153,7 +153,14 @@ wpp_interpreter:
         call print_chr
         cmp al, 0x0d
         je .handle_enter
+        cmp al, 0x08
+        je .handle_backspace
         jne .interpreter_loop
+    .handle_backspace:
+        dec di
+        dec di
+        mov byte [di], 0
+        jmp .interpreter_loop
     .handle_enter:
         mov byte [di], 0
         mov di, wpp_buffer
