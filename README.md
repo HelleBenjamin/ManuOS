@@ -1,0 +1,2 @@
+# ManuOS
+Simple hobby os.
