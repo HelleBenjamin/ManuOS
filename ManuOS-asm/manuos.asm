@@ -130,12 +130,13 @@ check_txt_functions:
 ; < - pop main register
 ; . - print main register
 ; , - read to the main register
-; [ - jump forward, by cx
-; ] - jump back, by cx
+; [ - pc = pc - cx
+; ] - pc = pc + cx
 ; ! - invert main register
 ; } - increment pointer
 ; { - decrement pointer
 ; ? - print pointer
+; #[char] - load char to main register
 wpp_interpreter:
     .init_interpreter:
         call clrscr
@@ -178,6 +179,16 @@ wpp_interpreter:
         je .if_jump_forward
         cmp al, ']'
         je .if_jump_back
+        cmp al, '!'
+        je .if_invert
+        cmp al, '}'
+        je .if_increment_pointer
+        cmp al, '{'
+        je .if_decrement_pointer
+        cmp al, '?'
+        je .if_print_pointer
+        cmp al, '#'
+        je .if_load_char
         jne .interpret
         .if_read:
             .read_loop:
@@ -208,6 +219,23 @@ wpp_interpreter:
             jmp .interpret
         .if_jump_back:
             sub di, cx
+            jmp .interpret
+        .if_invert:
+            neg bl
+            jmp .interpret
+        .if_increment_pointer:
+            inc cx
+            jmp .interpret
+        .if_decrement_pointer:
+            dec cx
+            jmp .interpret
+        .if_print_pointer:
+            mov al, cl
+            call print_chr
+            jmp .interpret
+        .if_load_char:
+            mov bl, [di]
+            inc di
             jmp .interpret
     .end_interpreter:
         call newline
