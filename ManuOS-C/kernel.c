@@ -68,6 +68,7 @@ void wpp_interpreter(void) {
     start:
     cls();
     char *wpp_buffer;
+    char bl, cx = 0;
     unsigned int i = 0;
     prints("Welcome to Wuf++ interpreter, press enter to run the code");
     nl();
@@ -82,56 +83,43 @@ void wpp_interpreter(void) {
             printc(wpp_buffer[i]);
             i++;
         }
-        asm("mov %bx, 0x0");
-        asm("mov %cx, 0x0");
         for (i = 0; wpp_buffer[i] != '\0'; i++) {
             switch (wpp_buffer[i])
             {
             case '+':
-                asm("inc %bl");
+                bl++;
                 break;
             case '-':
-                asm("dec %bl");
+                bl--;
                 break;
             case '>':
+                asm(
+                    "nop"
+                    : 
+                    : "bl"(bl)
+                );
                 asm("push %bx");
                 break;
             case '<':
                 asm("pop %bx");
+                asm(
+                    "nop"
+                    : "=bl"(bl)
+                    :
+                );
                 break;
             case '.':
-                asm(
-                    "mov %al, %bl\n\t"
-                    "call printchr\n\t"
-                );
+                printc(bl);
                 break;
             case ',':
-                char c = getch();
-                asm(
-                    "nop"
-                    :
-                    : "bl"(c)
-                );
+                bl = getch();
                 break;
             case '[':
-                unsigned int j = 0;
-                asm(
-                    "nop"
-                    : "=cx"(j)
-                    :
-                );
-                i = i - j;
+                i = i - cx;
                 break;
             case ']':
-                j = 0;
-                asm(
-                    "nop"
-                    : "=cx"(j)
-                    :
-                );
-                i = i + j;
+                i = i + cx;
                 break;
-            
             default:
                 break;
             }

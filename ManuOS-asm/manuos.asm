@@ -60,7 +60,7 @@ handle_commands:
     je init_text_editor
     mov bl, 'w'
     cmp bl, [cmd_buffer]
-    je wufpp_interpreter
+    je .wpp_command
     mov bx, not_found
     call print_str
     mov bx, cmd_buffer
@@ -73,19 +73,23 @@ handle_commands:
         mov bx, manumsg
         call print_str
         call newline
-        ret
+        jmp terminal
     .version_command:
         call newline
         mov bx, version
         call print_str
         call newline
-        ret
+        jmp terminal
     .help_command:
         call newline
         mov bx, help
         call print_str
         call newline
-        ret
+        jmp terminal
+
+    .wpp_command:
+        call wpp_interpreter
+        jmp terminal
 
 ; TEXT EDITOR
 init_text_editor:
@@ -119,40 +123,45 @@ check_txt_functions:
 ; Wuf++ - Brainfuck like code interpreter
 ; Registers that are used:
 ; bl - main register
-; + - increment register
-; - - decrement register
-; > - push register
-; < - pop register
-; . - print register
-; , - read register
-; [ - jump forward
-; ] - jump back
-wufpp_interpreter:
+; cx - pointer, not the program counter
+; + - increment main register
+; - - decrement main register
+; > - push main register
+; < - pop main register
+; . - print main register
+; , - read to the main register
+; [ - jump forward, by cx
+; ] - jump back, by cx
+; ! - invert main register
+; } - increment pointer
+; { - decrement pointer
+; ? - print pointer
+wpp_interpreter:
     .init_interpreter:
         call clrscr
         mov bx, wppmsg
         call print_str
         call newline
         mov di, wpp_buffer
-        mov cx, 0x0000 ; Length of the code
+        mov cx, 0x0000 ; Pointer
         mov bx, 0x0000 ; Main register
     .interpreter_loop:
         call read
         mov [di], al
         inc di
-        inc cx
         call print_chr
         cmp al, 0x0d
         je .handle_enter
         jne .interpreter_loop
     .handle_enter:
+        mov byte [di], 0
+        mov di, wpp_buffer
         call newline
     .interpret:
-        mov di, [wpp_buffer] ;di = wpp_buffer
-        dec di
         mov al, [di]
-        cmp di, cx
+        cmp di, 0
         je .end_interpreter
+        inc di
         cmp al, '+'
         je .if_plus
         cmp al, '-'
@@ -169,7 +178,7 @@ wufpp_interpreter:
         je .if_jump_forward
         cmp al, ']'
         je .if_jump_back
-        jmp .interpret
+        jne .interpret
         .if_read:
             .read_loop:
                 call read
@@ -195,22 +204,18 @@ wufpp_interpreter:
             call print_chr
             jmp .interpret
         .if_jump_forward:
-            inc di
-            inc cx
+            add di, cx
             jmp .interpret
         .if_jump_back:
-            dec di
-            dec cx
+            sub di, cx
             jmp .interpret
     .end_interpreter:
         call newline
         mov bx, fmsg
         call print_str
-        mov al, bl
-        call print_chr
         .l1:
             call read
             cmp al, 0x0d
             jne .l1
         call clrscr
-        ret
+        jmp terminal
