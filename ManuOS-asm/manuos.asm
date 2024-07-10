@@ -5,11 +5,7 @@ section .data
     not_found db 'Command not found: ', 0
     txt_msg db 'Text editor v1.2 ', 0
     escmsg db 'Press ESC to exit', 0
-    msg db 'Hello, World!', 0
     manumsg db 'Manu', 0
-    cm1 db 'version', 0
-    cm2 db 'help', 0
-    cm3 db 'txt', 0
 
 section .bss
     cmd_buffer resb 0x50
@@ -69,8 +65,6 @@ handle_commands:
         call newline
         mov bx, manumsg
         call print_str
-        mov al, 'M'
-        call print_chr
         call newline
         ret
     .version_command:

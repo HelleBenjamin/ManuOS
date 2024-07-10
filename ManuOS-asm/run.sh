@@ -11,4 +11,4 @@ objcopy -O binary kernel.elf kernel.bin
 
 cat boot.bin kernel.bin > manuos-image.bin
 
-qemu-system-i386 -fda manusos-image.bin
+qemu-system-i386 -fda manuos-image.bin
