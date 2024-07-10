@@ -20,11 +20,13 @@ start:
     call newline
     jmp main
 
-halt:
+; System calls
+
+halt: ; Parameters: none Returns: none
     nop
     jmp halt
 
-newline:
+newline: ; Parameters: none Returns: none
     mov al, 0x0a
     call print_chr
     mov al, 0x0d
