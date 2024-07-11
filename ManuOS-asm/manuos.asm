@@ -218,7 +218,6 @@ wpp_interpreter:
                 cmp al, 0
                 je .read_loop
             mov bl, al
-            ;call print_chr
             jmp .interpret
         .if_plus:
             inc bl
