@@ -7,6 +7,14 @@ extern void getchar();
 extern void nl();
 extern void cls();
 
+
+void ascii_to_hex(char *str) {
+    while (*str) {
+        *str = *str - 48;
+        *str = *str << 4;
+        str++;
+    }
+};
 void printc(char c) {
     asm("mov %al, 0x95\n\t");
     asm("call printchr\n\t");
@@ -130,6 +138,33 @@ void wpp_interpreter(void) {
         break;
     }
     goto start;
+}
+/* Wuf+ - Easier version of Wuf++
+
+Registers that are used:
+ax - reserved
+bx - main register
+cx - pointer
+dx - alternative main register
+di - program counter
+
+Syntax:
+INT <name> <value> - define integer
+CHAR <name> <value> - define character
+
+READ - read input to main register
+PRINT - print main register
+PUSH - push main register
+POP - pop main register
+INC - increment main register
+DEC - decrement main register
+PUSH' - push alternative main register
+POP' - pop alternative main register
+
+*/
+
+void wp(void) {
+
 }
 
 void main(void) {

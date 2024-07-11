@@ -28,6 +28,7 @@ Syntax:
     < - pop main register
     . - print main register
     , - read to the main register
+    & - jump to location pointed by pointer
     [ - pc = pc - cx
     ] - pc = pc + cx
     ! - invert main register
@@ -38,6 +39,8 @@ Syntax:
     ( - loop start, decrement pointer and loop until pointer = 0
     ) - loop end
     " - swap registers
+    %[char] - compare main register with char, jump if equal to location pointed by pointer
+    = - halt
 */
 
 string filename;
@@ -48,6 +51,7 @@ uint16_t cx = 0;
 unsigned int pc = 0;
 uint8_t stack[1000] = {0};
 unsigned int sp = 1000;
+bool halt = false;
 
 string dectohex(int num) {
     stringstream ss;
@@ -61,6 +65,7 @@ void Interpreter() {
         program.push_back(c);
     }
     for(pc = 0; pc < program.size(); pc++) {
+        if(halt) break;
         switch (program[pc]) {
             case '+':
                 bl++;
@@ -81,6 +86,9 @@ void Interpreter() {
                 break;
             case ',':
                 cin >> bl;
+                break;
+            case '&':
+                pc = cx;
                 break;
             case '[':
                 pc = pc - cx;
@@ -126,7 +134,14 @@ void Interpreter() {
                 bl = (cx & 0xFF);
                 cx = (cx >> 8) | stack[sp];
                 sp++;
-
+                break;
+            case '%':
+                if (bl == program[pc+1]) {
+                    pc = cx;
+                }
+                break;
+            case '=':
+                halt = true;
                 break;
             default:
                 break;

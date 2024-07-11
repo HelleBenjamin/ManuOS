@@ -2,7 +2,7 @@ BITS 16
 
 section .data
     welcome db 'Welcome to ManuOS 0.0.1-alpha', 0
-    
+section .bss
 
 section .text
     global start

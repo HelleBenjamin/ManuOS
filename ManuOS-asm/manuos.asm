@@ -138,16 +138,19 @@ check_txt_functions:
 ; < - pop main register
 ; . - print main register
 ; , - read to the main register
+; & - jump to location pointed by pointer
 ; [ - pc = pc - cx
 ; ] - pc = pc + cx
 ; ! - invert main register
 ; } - increment pointer
 ; { - decrement pointer
 ; $ - print pointer
-; #[char] - load char to main register
+; #<char> - load char to main register
 ; ( - loop start, decrement pointer and loop until pointer = 0
 ; ) - loop end
 ; " - swap registers
+; %<char> - compare main register with char, jump if equal to location pointed by pointer
+; = - halt
 wpp_interpreter:
     .init_interpreter:
         call clrscr
@@ -195,6 +198,10 @@ wpp_interpreter:
         je .if_read
         cmp al, '&'
         je .if_jump
+        cmp al, '['
+        je .if_jump_back
+        cmp al, ']'
+        je .if_jump_forward
         cmp al, '!'
         je .if_invert
         cmp al, '}'
@@ -211,6 +218,10 @@ wpp_interpreter:
         je .if_loop_end
         cmp al, '"'
         je .if_swap
+        cmp al, '%'
+        je .if_compare
+        cmp al, '='
+        je .if_halt
         jne .interpret
         .if_read:
             .read_loop:
@@ -235,11 +246,14 @@ wpp_interpreter:
             mov al, bl
             call print_chr
             jmp .interpret
-        .if_jump_forward:
-            add di, cx
+        .if_jump:
+            mov di, cx
             jmp .interpret
         .if_jump_back:
             sub di, cx
+            jmp .interpret
+        .if_jump_forward:
+            add di, cx
             jmp .interpret
         .if_invert:
             not bl
@@ -270,6 +284,15 @@ wpp_interpreter:
         .if_swap:
             xchg bl, cl
             jmp .interpret
+        .if_compare:
+            mov ah, [di]
+            inc di
+            cmp bl, ah
+            jne .interpret
+            mov di, cx
+            jmp .interpret
+        .if_halt:
+            jmp .end_interpreter
     .end_interpreter:
         call newline
         mov bx, fmsg
