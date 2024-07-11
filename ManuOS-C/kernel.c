@@ -9,6 +9,7 @@ extern void cls();
 extern void wpp_interpreter();
 
 
+
 void ascii_to_hex(char *str) {
     while (*str) {
         *str = *str - 48;
@@ -54,34 +55,6 @@ short m_strcmp(char *str1, char *str2) {
         str2++;
     }
     return *(unsigned char *)str1 - *(unsigned char *)str2;
-}
-
-/* Wuf+ - Easier version of Wuf++
-
-Registers that are used:
-ax - reserved
-bx - main register
-cx - pointer
-dx - alternative main register
-di - program counter
-
-Syntax:
-INT <name> <value> - define integer
-CHAR <name> <value> - define character
-
-READ - read input to main register
-PRINT - print main register
-PUSH - push main register
-POP - pop main register
-INC - increment main register
-DEC - decrement main register
-PUSH' - push alternative main register
-POP' - pop alternative main register
-
-*/
-
-void wp(void) {
-
 }
 
 void main(void) {
