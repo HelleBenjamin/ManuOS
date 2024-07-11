@@ -127,6 +127,11 @@ void yatzy() {
         for (int i = 0; i < 5; i++) {
             dices[i] = diceroll();
         }
+        rollsRemaining--;
+        yatzy_loop:
+        prints("Rolls remaining: ");
+        printi(rollsRemaining);
+        nl();
         prints("Your dices are: ");
         for (int i = 0; i < 5; i++) {
             printc('[');
@@ -146,7 +151,7 @@ void yatzy() {
         prints("2 - Score");
         nl();
         char c = getch();
-        char *dicesToReRoll;
+        char dicesToReRoll[5] = {0};
         int i = 0;
         if (c == '1') {
             prints("Which dices to reroll?");
@@ -154,13 +159,21 @@ void yatzy() {
                 dicesToReRoll[i] = getc();
                 printc(dicesToReRoll[i]);
                 if (dicesToReRoll[i] == NEWLINE) {
-                    dicesToReRoll[i] = '\0';
+
                     break;
                 }
                 i++;
             }
-
-            for (int i = 0; i < 5; i++) {}
+            for (int i = 0; i < 5; i++) {
+                if (dicesToReRoll[i] == '1' || dicesToReRoll[i] == '2' || dicesToReRoll[i] == '3' || dicesToReRoll[i] == '4' || dicesToReRoll[i] == '5') {
+                    dices[i] = diceroll();
+                }
+            }
+            rollsRemaining--;
+            if (rollsRemaining == 0) {
+                break;
+            }
+            goto yatzy_loop;
             
         } else if (c == '2') {
             break;
