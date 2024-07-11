@@ -1,7 +1,7 @@
 
 #define NEWLINE 0x0d
 #define VERSION "ManuOS 0.0.1-alpha, Puppy-kernel 0.0.1, C-edition"
-#define HELP_MSG "Commands: version, help, wpp"
+#define HELP_MSG "Commands: version, help, wpp, yatzy"
 
 extern void getchar();
 extern void nl();
@@ -10,15 +10,18 @@ extern void wpp_interpreter();
 
 
 
-void ascii_to_hex(char *str) {
-    while (*str) {
-        *str = *str - 48;
-        *str = *str << 4;
-        str++;
-    }
-};
+char numToAscii(int num) {
+    return '0' + num;
+}
+short asciiToNum(char c) {
+    return c - 48;
+}
 void printc(char c) {
-    asm("mov %al, 0x95\n\t");
+    asm(
+        "nop\n\t"
+        : "=al"(c)
+        : "al"(c)
+    );
     asm("call printchr\n\t");
 }
 
@@ -43,7 +46,7 @@ char getch() {
     char c = 0;
     while (1) {
         c = getc();
-        if (c != NEWLINE) {
+        if (c != 0) {
             break;
         }
     }
@@ -57,19 +60,76 @@ short m_strcmp(char *str1, char *str2) {
     return *(unsigned char *)str1 - *(unsigned char *)str2;
 }
 
+int seed = 1;
+unsigned int random(int min, int max) {;
+    seed = (seed * 167772165 + 583) % 2147483647;
+    return (seed % (max - min + 1)) + min;
+}
+
+void yatzy() {
+    cls();
+    prints("YATZY");
+    nl();
+    int scoreboard[16] = {0}; 
+    /* Score board
+        0 - Ones
+        1 - Twos
+        2 - Threes
+        3 - Fours
+        4 - Fives
+        5 - Sixes
+        6 - Sum
+        7 - Bonus
+        8 - Three of a kind
+        9 - Four of a kind
+        10 - Full house
+        11 - Small straight
+        12 - Large straight
+        13 - Chance
+        14 - Yahtzee
+        15 - Total
+    */
+    int dices[5] = {0};
+    while (1) {
+        prints("Press enter to roll");
+        getch();
+        prints("Rolling...");
+        nl();
+        for (int i = 0; i < 5; i++) {
+            dices[i] = random(1, 6);
+            if (dices[i] < 6 && dices[i] > 1) {
+                printc(numToAscii(dices[i]));
+                printc(' ');
+            } else {
+                i--;
+            }
+        }
+        nl();
+    }
+
+}
+
 void main(void) {
     char *prompt;
     int i = 0;
+    prints("Welcome to ManuOS");
+    nl();
     while (1){
         printc('>');
         i = 0;
         while (1) {
             prompt[i] = getc();
+            printc(prompt[i]);
             if (prompt[i] == NEWLINE) {
                 prompt[i] = '\0';
                 break;
             }
-            printc(prompt[i]);
+            if (prompt[i] == 0x08) {
+                i--;
+                printc(' ');
+                printc(0x08);
+                prompt[i] = '\0';
+            }
             i++;
         }
 
@@ -81,6 +141,8 @@ void main(void) {
             nl();
         } else if (m_strcmp(prompt, "wpp") == 0) {
             wpp_interpreter();
+        } else if (m_strcmp(prompt, "yatzy") == 0) {
+            yatzy();
         }
     }
 }
