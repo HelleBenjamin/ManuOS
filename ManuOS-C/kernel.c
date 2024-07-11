@@ -32,6 +32,22 @@ void prints(char *s) {
     }
 }
 
+void printi(int i) {
+    char buf[10];
+    int j = 0;
+    if (i < 0) {
+        printc('-');
+        i *= -1;
+    }
+    while (i > 0) {
+        buf[j++] = i % 10 + '0';
+        i /= 10;
+    }
+    while (j > 0) {
+        printc(buf[--j]);
+    }
+}
+
 char getc() {
     char c = 0;
     getchar();
@@ -90,6 +106,7 @@ void yatzy() {
         15 - Total
     */
     int dices[5] = {0};
+    int rollsRemaining = 3;
     while (1) {
         prints("Press enter to roll");
         getch();
@@ -98,13 +115,34 @@ void yatzy() {
         for (int i = 0; i < 5; i++) {
             dices[i] = random(1, 6);
             if (dices[i] < 6 && dices[i] > 1) {
-                printc(numToAscii(dices[i]));
-                printc(' ');
+                continue;
             } else {
                 i--;
             }
         }
+        prints("Your dices are: ");
+        for (int i = 0; i < 5; i++) {
+            printc('[');
+            printi(dices[i]);
+            printc(']');
+            printc(' ');
+        }
         nl();
+        prints("                 ^   ^   ^   ^   ^");
+        nl();
+        prints("Dice numbers:    1   2   3   4   5");
+        nl();
+        prints("What do you want to do?");
+        nl();
+        prints("1 - Reroll");
+        nl();
+        prints("2 - Score");
+        char c = getch();
+        if (c == '1') {
+            prints("Which dices to reroll?");
+        } else if (c == '2') {
+            break;
+        }
     }
 
 }
@@ -142,6 +180,8 @@ void main(void) {
         } else if (m_strcmp(prompt, "wpp") == 0) {
             wpp_interpreter();
         } else if (m_strcmp(prompt, "yatzy") == 0) {
+            yatzy();
+        } else if (m_strcmp(prompt, "y") == 0) {
             yatzy();
         }
     }
