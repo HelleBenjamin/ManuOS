@@ -145,7 +145,7 @@ check_txt_functions:
 ; { - decrement pointer
 ; $ - print pointer
 ; #[char] - load char to main register
-; ( - loop start, loop until pointer = 0
+; ( - loop start, decrement pointer and loop until pointer = 0
 ; ) - loop end
 ; " - swap registers
 wpp_interpreter:
@@ -244,7 +244,7 @@ wpp_interpreter:
             sub di, cx
             jmp .interpret
         .if_invert:
-            neg bl
+            not bl
             jmp .interpret
         .if_increment_pointer:
             inc cx

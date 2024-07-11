@@ -11,7 +11,7 @@
 
 using namespace std;
 
-vector<string> program; // source program
+vector<char> program; // source program
 vector<string> compiledProgram; // compiled program
 
 
@@ -37,6 +37,10 @@ Syntax:
     } - increment pointer
     { - decrement pointer
     $ - print pointer
+    #[char] - load char to the main register
+    ( - loop start, decrement pointer and loop until pointer = 0
+    ) - loop end
+    " - swap registers
 */
 
 string filename;
@@ -50,14 +54,90 @@ string dectohex(int num) {
 }
 
 void compileX86() {
-    string line;
-    while(getline(source_file, line)) {
-        program.push_back(line);
+    char c;
+    while(source_file.get(c)) {
+        program.push_back(c);
     }
+
+    compiledProgram.push_back("global _start");
+    compiledProgram.push_back(";wpp v0.1");
+    compiledProgram.push_back("section .text");
+    compiledProgram.push_back("_start:");
+    compiledProgram.push_back("mov ecx, 0");
+    compiledProgram.push_back("mov ebx, 0");
     for(int i = 0; i < program.size(); i++) {
-        switch (program[i][0]) {
-            case 
+        switch (program[i]) {
+            case '+':
+                compiledProgram.push_back("inc ebx");
+                break;
+            case '-':
+                compiledProgram.push_back("dec ebx");
+                break;
+            case '>':
+                compiledProgram.push_back("push ebx");
+                break;
+            case '<':
+                compiledProgram.push_back("pop ebx");
+                break;
+            case '.':
+                compiledProgram.push_back("mov ecx, bl");
+                compiledProgram.push_back("mov eax, 4");
+                compiledProgram.push_back("mov ebx, 1");
+                compiledProgram.push_back("mov edx, 1");
+                compiledProgram.push_back("int 80h");
+                break;
+            case ',':
+                compiledProgram.push_back("mov ah, 1");
+                compiledProgram.push_back("int 21h");
+                break;
+            case '[':
+                compiledProgram.push_back("sub pc, ecx");
+                break;
+            case ']':
+                compiledProgram.push_back("add pc, ecx");
+                break;
+            case '!':
+                compiledProgram.push_back("not ebx");
+                break;
+            case '}':
+                compiledProgram.push_back("inc ecx");
+                break;
+            case '{':
+                compiledProgram.push_back("dec ecx");
+                break;
+            case '$':
+                compiledProgram.push_back("mov ecx, cx");
+                compiledProgram.push_back("mov eax, 4");
+                compiledProgram.push_back("mov ebx, 1");
+                compiledProgram.push_back("mov edx, 1");
+                compiledProgram.push_back("int 80h");
+                break;
+            case '#':
+                compiledProgram.push_back("mov ebx, '" + std::string(1, program[i+1]) + "'");
+                break;
+            case '(': 
+                compiledProgram.push_back("loop:");
+                compiledProgram.push_back("dec ecx");
+                break;
+            case ')':
+                compiledProgram.push_back("cmp ecx, 0");
+                compiledProgram.push_back("jne loop");
+                break;
+            case '"':
+                compiledProgram.push_back("xchg ebx, ecx");
+                break;
+            default:
+                break;
+        }
     }
+    compiledProgram.push_back("mov eax, 1");
+    compiledProgram.push_back("mov ebx, 0");
+    compiledProgram.push_back("int 80h");
+    for(int i = 0; i < compiledProgram.size(); i++) {
+        output_file << compiledProgram[i] << endl;
+        cout << compiledProgram[i] << endl;
+    }
+    output_file.close();
 }
 
 int main(int argc, char *argv[]) {
@@ -83,15 +163,9 @@ int main(int argc, char *argv[]) {
             cout << version << endl;
             cout << supportedArchitectures << endl;
         }
-        if(string(argv[i]) == "-BIN") {
-            format = 0;
-        }
-        if(string(argv[i]) == "-HEX") {
-            format = 1;
-        }
     }
     if (source_file.is_open() && output_file.is_open()) {
-        p4();
+        compileX86();
         source_file.close();
         output_file.close();
     }
