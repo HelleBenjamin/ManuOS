@@ -145,6 +145,7 @@ check_txt_functions:
 ; #[char] - load char to main register
 ; ( - loop start, loop until pointer = 0
 ; ) - loop end
+; " - swap registers
 wpp_interpreter:
     .init_interpreter:
         call clrscr
@@ -200,7 +201,7 @@ wpp_interpreter:
         je .if_increment_pointer
         cmp al, '{'
         je .if_decrement_pointer
-        cmp al, '?'
+        cmp al, '$'
         je .if_print_pointer
         cmp al, '#'
         je .if_load_char
@@ -208,6 +209,8 @@ wpp_interpreter:
         je .if_loop_start
         cmp al, ')'
         je .if_loop_end
+        cmp al, '"'
+        je .if_swap
         jne .interpret
         .if_read:
             .read_loop:
@@ -264,6 +267,9 @@ wpp_interpreter:
             je .interpret
             dec cx
             mov di, dx
+            jmp .interpret
+        .if_swap:
+            xchg bl, cl
             jmp .interpret
     .end_interpreter:
         call newline
