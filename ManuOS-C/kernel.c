@@ -19,7 +19,7 @@ short asciiToNum(char c) {
 void printc(char c) {
     asm(
         "nop\n\t"
-        : "=al"(c)
+        :
         : "al"(c)
     );
     asm("call printchr\n\t");
@@ -76,9 +76,18 @@ short m_strcmp(char *str1, char *str2) {
     return *(unsigned char *)str1 - *(unsigned char *)str2;
 }
 
-int seed = 1;
+
+
 unsigned int random(int min, int max) {;
-    seed = (seed * 167772165 + 583) % 2147483647;
+    int seed;
+    //asm("push %ax\n\t");
+    asm("mov %ax, %ax\n\t");
+    asm(
+        "nop\n\t"
+        : "=ax"(seed)
+        : 
+    );
+    //asm("pop %eax\n\t");
     return (seed % (max - min + 1)) + min;
 }
 
@@ -127,8 +136,8 @@ void yatzy() {
         for (int i = 0; i < 5; i++) {
             dices[i] = diceroll();
         }
-        rollsRemaining--;
         yatzy_loop:
+        rollsRemaining--;
         prints("Rolls remaining: ");
         printi(rollsRemaining);
         nl();
@@ -144,6 +153,9 @@ void yatzy() {
         nl();
         prints("Dice numbers:    1   2   3   4   5");
         nl();
+        if (rollsRemaining == 0) {
+            break;
+        }
         prints("What do you want to do?");
         nl();
         prints("1 - Reroll");
@@ -165,13 +177,25 @@ void yatzy() {
                 i++;
             }
             for (int i = 0; i < 5; i++) {
-                if (dicesToReRoll[i] == '1' || dicesToReRoll[i] == '2' || dicesToReRoll[i] == '3' || dicesToReRoll[i] == '4' || dicesToReRoll[i] == '5') {
-                    dices[i] = diceroll();
+                switch (dicesToReRoll[i]) {
+                    case '0':
+                        break;
+                    case '1':
+                        dices[0] = diceroll();
+                        break;
+                    case '2':
+                        dices[1] = diceroll();
+                        break;
+                    case '3':
+                        dices[2] = diceroll();
+                        break;
+                    case '4':
+                        dices[3] = diceroll();
+                        break;
+                    case '5':
+                        dices[4] = diceroll();
+                        break;
                 }
-            }
-            rollsRemaining--;
-            if (rollsRemaining == 0) {
-                break;
             }
             goto yatzy_loop;
             
