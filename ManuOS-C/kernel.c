@@ -82,6 +82,18 @@ unsigned int random(int min, int max) {;
     return (seed % (max - min + 1)) + min;
 }
 
+int diceroll() {
+    while (1) {
+        int dice = random(1, 6);
+        if (dice < 6 && dice > 1) {
+            return dice;
+        } else {
+            continue;
+        }       
+    }
+
+}
+
 void yatzy() {
     cls();
     prints("YATZY");
@@ -113,12 +125,7 @@ void yatzy() {
         prints("Rolling...");
         nl();
         for (int i = 0; i < 5; i++) {
-            dices[i] = random(1, 6);
-            if (dices[i] < 6 && dices[i] > 1) {
-                continue;
-            } else {
-                i--;
-            }
+            dices[i] = diceroll();
         }
         prints("Your dices are: ");
         for (int i = 0; i < 5; i++) {
@@ -137,9 +144,24 @@ void yatzy() {
         prints("1 - Reroll");
         nl();
         prints("2 - Score");
+        nl();
         char c = getch();
+        char *dicesToReRoll;
+        int i = 0;
         if (c == '1') {
             prints("Which dices to reroll?");
+            while (1) {
+                dicesToReRoll[i] = getc();
+                printc(dicesToReRoll[i]);
+                if (dicesToReRoll[i] == NEWLINE) {
+                    dicesToReRoll[i] = '\0';
+                    break;
+                }
+                i++;
+            }
+
+            for (int i = 0; i < 5; i++) {}
+            
         } else if (c == '2') {
             break;
         }
