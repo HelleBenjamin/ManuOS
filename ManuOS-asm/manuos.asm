@@ -143,7 +143,7 @@ check_txt_functions:
 ; ! - invert main register
 ; } - increment pointer
 ; { - decrement pointer
-; ? - print pointer
+; $ - print pointer
 ; #[char] - load char to main register
 ; ( - loop start, loop until pointer = 0
 ; ) - loop end
