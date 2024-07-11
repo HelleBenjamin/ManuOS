@@ -193,10 +193,8 @@ wpp_interpreter:
         je .if_print
         cmp al, ','
         je .if_read
-        cmp al, '['
-        je .if_jump_forward
-        cmp al, ']'
-        je .if_jump_back
+        cmp al, '&'
+        je .if_jump
         cmp al, '!'
         je .if_invert
         cmp al, '}'
