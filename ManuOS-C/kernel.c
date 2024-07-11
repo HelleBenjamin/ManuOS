@@ -1,6 +1,6 @@
 
 #define NEWLINE 0x0d
-#define VERSION "ManuOS 0.0.1-puppy"
+#define VERSION "ManuOS 0.0.1-alpha, Puppy-kernel 0.0.1, C-edition"
 #define HELP_MSG "Commands: version, help, wpp"
 
 extern void getchar();

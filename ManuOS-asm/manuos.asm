@@ -1,7 +1,7 @@
 bits 16
 
 section .data
-    version db 'ManuOS 0.0.1-alpha, Puppy-kernel 0.0.1', 0
+    version db 'ManuOS 0.0.1-alpha, Puppy-kernel 0.0.1, Asm-edition', 0
     help db 'Commands: m(manu), v(version), h(help), t(text editor), w(wuf++ interpreter)', 0
     not_found db 'Command not found: ', 0
     txt_msg db 'Text editor v1.2 ', 0
