@@ -130,6 +130,8 @@ check_txt_functions:
 ; Registers that are used:
 ; bl - main register
 ; cx - pointer, not the program counter
+; Example: #H.#e.#l.#l.#o.
+;Syntax:
 ; + - increment main register
 ; - - decrement main register
 ; > - push main register
