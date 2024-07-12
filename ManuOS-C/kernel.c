@@ -1,7 +1,7 @@
 
 #define NEWLINE 0x0d
 #define VERSION "ManuOS 0.0.1-alpha, Puppy-kernel 0.0.1, C-edition"
-#define HELP_MSG "Commands: version, help, wpp, yatzy, mazec"
+#define HELP_MSG "Commands: version, help, wpp, yatzy"
 
 extern void getchar();
 extern void nl();
@@ -196,24 +196,8 @@ void yatzy() {
                     break;
             }
         }
-        nl();
-        printi(dicesone);
-        printc(' ');
-        printi(dicestwo);
-        printc(' ');
-        printi(dicesthree);
-        printc(' ');
-        printi(dicesfour);
-        printc(' ');
-        printi(dicesfive);
-        printc(' ');
-        printi(dicessix);
-        nl();
-        rollsRemaining--;
         initial_seed = get_bios_time();
         initialize_seed(initial_seed);
-        prints("Rolls remaining: ");
-        printi(rollsRemaining);
         nl();
         prints("Your dices are: ");
         for (int i = 0; i < 5; i++) {
@@ -227,9 +211,6 @@ void yatzy() {
         nl();
         prints("Dice numbers:    1   2   3   4   5");
         nl();
-        if (rollsRemaining == 0) {
-            break;
-        }
         prints("What do you want to do?");
         nl();
         prints("1 - Reroll");
@@ -406,8 +387,6 @@ void main(void) {
             yatzy();
         } else if (m_strcmp(prompt, "y") == 0) {
             yatzy();
-        } else if (m_strcmp(prompt, "mazec") == 0) {
-            mazec_start_menu();
         }
     }
 }
