@@ -1,7 +1,7 @@
 
 #define NEWLINE 0x0d
 #define VERSION "ManuOS 0.0.1-alpha, Puppy-kernel 0.0.1, C-edition"
-#define HELP_MSG "Commands: version, help, wpp, yatzy"
+#define HELP_MSG "Commands: version, help, wpp, yatzy, mazec"
 
 extern void getchar();
 extern void nl();
@@ -308,6 +308,7 @@ void yatzy() {
             if (m_strcmp(sel, "sixes") == 0) {
                 scoreboard[5] = dicessix;
             }
+
             
         } else if (c == '3') {
                        prints("--Scoreboard--");
@@ -368,6 +369,135 @@ void yatzy() {
     }
 
 }
+#define NULL 0
+#define DEFAULT_X 1 //player start position
+#define DEFAULT_Y 1
+#define WIDTH 30
+#define HEIGHT 20
+
+#define WALL '#'
+#define PATH ' '
+#define PLAYER 'P'
+#define DOOR 'D'
+
+
+static char* maze0[HEIGHT] = {
+    "#############################",
+    "# #   #      #              #",
+    "# ## ### # # #              #",
+    "#        # # #              #",
+    "#### ## ## ### #            #",
+    "#  #  #  # # #D###          #",
+    "#  #  #  # # ### #          #",
+    "#     #  # #     #          #",
+    "# ######## # ### #          #",
+    "#      #     #   #          #",
+    "#### # #### ###  #          #",
+    "#                           #",
+    "#                           #",
+    "#                           #",
+    "#                           #",
+    "#                           #",
+    "#                           #",
+    "#                           #",
+    "#                           #",
+    "#############################"
+};
+
+int currentX = 1;
+int currentY = 1;
+char** currentMaze = NULL;
+int currentMazeNum = 0;
+
+void renderMaze(char** maze) {
+    for (int i = 0; i < HEIGHT; i++) {
+        for (int j = 0; j < WIDTH; j++) {
+            printc(maze[i][j]);
+        }
+        nl();
+    }
+    prints("Input: ");
+}
+
+void movePlayer(char** maze) {
+    char input = getch();
+    switch (input){
+        case 'w':
+            //up
+            if (maze[currentY - 1][currentX] != WALL) {
+                maze[currentY][currentX] = PATH;
+                currentY--;
+                maze[currentY][currentX] = PLAYER;
+            }
+            break;
+        case 'a':
+            //left
+            if (maze[currentY][currentX - 1] != WALL) {
+                maze[currentY][currentX] = PATH;
+                currentX--;
+                maze[currentY][currentX] = PLAYER;
+            }
+            break;
+        case 's':
+            //down
+            if (maze[currentY + 1][currentX] != WALL) {
+                maze[currentY][currentX] = PATH;
+                currentY++;
+                maze[currentY][currentX] = PLAYER;
+            }
+            break;
+        case 'd':
+            //right
+            if (maze[currentY][currentX + 1] != WALL) {
+                maze[currentY][currentX] = PATH;
+                currentX++;
+                maze[currentY][currentX] = PLAYER;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void load_new_level() {
+    currentMaze = maze0;
+    currentMazeNum++;
+    currentMaze[currentY][currentX] = PATH;
+    currentX = DEFAULT_X;
+    currentY = DEFAULT_Y;
+    currentMaze[currentY][currentX] = PLAYER;
+}
+
+void game_loop() {
+    while (1) {
+        if (currentMaze[currentY + 1][currentX] == DOOR || currentMaze[currentY - 1][currentX] == DOOR || currentMaze[currentY][currentX + 1] == DOOR || currentMaze[currentY][currentX - 1] == DOOR) {
+            load_new_level();
+        }
+        cls();
+        prints("Current level: ");
+        printi(currentMazeNum);
+        renderMaze(currentMaze);
+        movePlayer(currentMaze);
+    }
+}
+
+void mazec_start_menu() {
+    char start_menu_msg[] = "MazeC 0.1\n 1. Start\n 2. Keyboard controls\n 3. Exit\n";
+    prints(start_menu_msg);
+    nl();
+    while (1) {
+        char input = getch();
+        if (input == '1') {
+            load_new_level();
+            game_loop();
+        } else if (input == '2') {
+            prints("Keyboard controls: ");
+            prints("w = up, a = left, s = down, d = right, press enter after pressing a key\n");
+        } else if (input == '3') {
+            break;
+        }
+    }
+}
 
 void main(void) {
     char *prompt;
@@ -405,6 +535,8 @@ void main(void) {
             yatzy();
         } else if (m_strcmp(prompt, "y") == 0) {
             yatzy();
+        } else if (m_strcmp(prompt, "mazec") == 0) {
+            mazec_start_menu();
         }
     }
 }
