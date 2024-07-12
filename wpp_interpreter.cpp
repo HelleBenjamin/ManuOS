@@ -41,6 +41,11 @@ Syntax:
     " - swap registers
     %[char] - compare main register with char, jump if equal to location pointed by pointer
     = - halt
+    / - add main register and pointer, bx = bx + cx
+    \ - sub main register and pointer, bx = bx - cx
+    @ - load 0 to the main register
+    * - adjust main register and pointer to addition, bx = bx - 0x30
+    ^- swap bl with bh, bh <- bl
 */
 
 string filename;

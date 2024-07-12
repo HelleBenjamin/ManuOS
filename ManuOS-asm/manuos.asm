@@ -151,6 +151,10 @@ check_txt_functions:
 ; " - swap registers
 ; %<char> - compare main register with char, jump if equal to location pointed by pointer
 ; = - halt
+; / - add bx and cx, bx = bx + cx
+; \ - sub bx and cx, bx = bx - cx
+; @ - load zero to bx, bx = 0
+; ^ - swap bl with bh, bh <-> bl
 wpp_interpreter:
     .init_interpreter:
         call clrscr
@@ -158,6 +162,8 @@ wpp_interpreter:
         call print_str
         call newline
         mov di, wpp_buffer
+        mov ecx, 0x100 ; Length of wpp_buffer
+        rep stosb
         mov cx, 0x0000 ; Pointer
         mov bx, 0x0000 ; Main register
     .interpreter_loop:
@@ -224,6 +230,14 @@ wpp_interpreter:
         je .if_compare
         cmp al, '='
         je .if_halt
+        cmp al, '/'
+        je .if_add
+        cmp al, '\'
+        je .if_sub
+        cmp al, '@'
+        je .if_ld_zero
+        cmp al, '^'
+        je .if_swp_bh_bl
         jne .interpret
         .if_read:
             .read_loop:
@@ -295,6 +309,18 @@ wpp_interpreter:
             jmp .interpret
         .if_halt:
             jmp .end_interpreter
+        .if_add:
+            add bx, cx
+            jmp .interpret
+        .if_sub:
+            sub bx, cx
+            jmp .interpret
+        .if_ld_zero:
+            mov bx, 0x0000
+            jmp .interpret
+        .if_swp_bh_bl:
+            xchg bh, bl
+            jmp .interpret
     .end_interpreter:
         call newline
         mov bx, fmsg

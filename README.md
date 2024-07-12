@@ -38,3 +38,7 @@ A hobby os written in C and asm.
 - **"** - swap registers, *bx = dx, dx = bx*
 - **%[char]** - compare main register with char, jump if equal to location pointed by pointer, *if bx == char jump to cx*
 - **=** - halt program, *halt = 1*
+- **/** - add main register and pointer, *bx = bx + cx*
+- **\\** - sub main register and pointer, *bx = bx - cx*
+- **@** - load zero to main register, *bx = 0*
+- **^** - swap bl with bh, *bx = bh, bh = bl*
