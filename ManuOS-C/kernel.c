@@ -9,7 +9,12 @@ extern void cls();
 extern void wpp_interpreter();
 
 
-
+void sleepms(int ms) {
+    int i = 0;
+    while (i < ms) {
+        i++;
+    }
+}
 char numToAscii(int num) {
     return '0' + num;
 }
@@ -76,19 +81,41 @@ short m_strcmp(char *str1, char *str2) {
     return *(unsigned char *)str1 - *(unsigned char *)str2;
 }
 
+unsigned long a = 1664525;
+unsigned long c = 1013904223;
+unsigned long m = 4294967290;
+
+unsigned long seed; // Seed value
+
+void initialize_seed(unsigned long initial_seed) {
+    seed = initial_seed;
+}
+
+unsigned long lcg() {
+    seed = (a * seed + c) % m;
+    return seed;
+}
 
 
-unsigned int random(int min, int max) {;
-    int seed;
-    //asm("push %ax\n\t");
-    asm("mov %ax, %ax\n\t");
-    asm(
-        "nop\n\t"
-        : "=ax"(seed)
-        : 
+unsigned long get_bios_time() {
+    unsigned long time = 0;
+
+    // BIOS interrupt 1Ah, function 00h to get the current clock count
+    __asm__ __volatile__ (
+        "int $0x1A"
+        : "=c" (((unsigned char *)&time)[1]),
+          "=d" (((unsigned char *)&time)[0]),
+          "=b" (((unsigned char *)&time)[2]),
+          "=a" (((unsigned char *)&time)[3])
+        : "a" (0x0000)
     );
-    //asm("pop %eax\n\t");
-    return (seed % (max - min + 1)) + min;
+
+    return time;
+}
+unsigned long random(unsigned long min, unsigned long max) {
+    unsigned long range = max - min + 1;
+    unsigned long random_value = lcg() % range;
+    return min + random_value;
 }
 
 int diceroll() {
@@ -128,6 +155,8 @@ void yatzy() {
     */
     int dices[5] = {0};
     int rollsRemaining = 3;
+    unsigned long initial_seed = get_bios_time();
+    initialize_seed(initial_seed);
     while (1) {
         prints("Press enter to roll");
         getch();
@@ -138,6 +167,8 @@ void yatzy() {
         }
         yatzy_loop:
         rollsRemaining--;
+        initial_seed = get_bios_time();
+        initialize_seed(initial_seed);
         prints("Rolls remaining: ");
         printi(rollsRemaining);
         nl();
