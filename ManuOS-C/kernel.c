@@ -157,6 +157,12 @@ void yatzy() {
     int rollsRemaining = 3;
     unsigned long initial_seed = get_bios_time();
     initialize_seed(initial_seed);
+    unsigned int dicesone = 0; // how many dices are equal to 1
+    unsigned int dicestwo = 0;
+    unsigned int dicesthree = 0;
+    unsigned int dicesfour = 0;
+    unsigned int dicesfive = 0;
+    unsigned int dicessix = 0;
     while (1) {
         prints("Press enter to roll");
         getch();
@@ -166,6 +172,39 @@ void yatzy() {
             dices[i] = diceroll();
         }
         yatzy_loop:
+        for (int i = 0; i < 5; i++) {
+            if (dices[i] == 1) {
+                dicesone++;
+            }
+            if (dices[i] == 2) {
+                dicestwo++;
+            }
+            if (dices[i] == 3) {
+                dicesthree++;
+            }
+            if (dices[i] == 4) {
+                dicesfour++;
+            }
+            if (dices[i] == 5) {
+                dicesfive++;
+            }
+            if (dices[i] == 6) {
+                dicessix++;
+            }
+        }
+        nl();
+        printi(dicesone);
+        printc(' ');
+        printi(dicestwo);
+        printc(' ');
+        printi(dicesthree);
+        printc(' ');
+        printi(dicesfour);
+        printc(' ');
+        printi(dicesfive);
+        printc(' ');
+        printi(dicessix);
+        nl();
         rollsRemaining--;
         initial_seed = get_bios_time();
         initialize_seed(initial_seed);
@@ -193,6 +232,8 @@ void yatzy() {
         nl();
         prints("2 - Score");
         nl();
+        prints("3 - See scoreboard");
+        nl();
         char c = getch();
         char dicesToReRoll[5] = {0};
         int i = 0;
@@ -213,6 +254,7 @@ void yatzy() {
                         break;
                     case '1':
                         dices[0] = diceroll();
+                        dicesone--;
                         break;
                     case '2':
                         dices[1] = diceroll();
@@ -231,7 +273,46 @@ void yatzy() {
             goto yatzy_loop;
             
         } else if (c == '2') { // score
-            prints("--Scoreboard--");
+            c = getch();
+            if (c == '1') {
+                goto yatzy_loop;
+            }
+            if (c == '2') {
+                prints("Where do you want to score?");
+                nl();
+                char sel[10] = {0};
+                i = 0;
+                while (1) {
+                    sel[i] = getc();
+                    printc(sel[i]);
+                    if (sel[i] == NEWLINE) {
+                        sel[i] = '\0';
+                        break;
+                    }
+                    i++;
+                }
+                if (m_strcmp(sel, "ones") == 0) {
+                    scoreboard[0] = dicesone;
+                }
+                if (m_strcmp(sel, "twos") == 0) {
+                    scoreboard[1] = dicesone;
+                }
+                if (m_strcmp(sel, "threes") == 0) {
+                    scoreboard[2] = dicesone;
+                }
+                if (m_strcmp(sel, "fours") == 0) {
+                    scoreboard[3] = dicesone;
+                }
+                if (m_strcmp(sel, "fives") == 0) {
+                    scoreboard[4] = dicesone;
+                }
+                if (m_strcmp(sel, "sixes") == 0) {
+                    scoreboard[5] = dicesone;
+                }
+            }
+            
+        } else if (c == '3') {
+                       prints("--Scoreboard--");
             nl();
             prints("Ones: ");
             printi(scoreboard[0]);
@@ -281,15 +362,10 @@ void yatzy() {
             prints("Total: ");
             printi(scoreboard[15]);
             nl();
-            prints("1. Reroll");
+            prints("--------------");
             nl();
-            prints("2. Score");
-            nl();
-            c = getch();
-            if (c == '1') {
-                goto yatzy_loop;
-            }
-            
+            prints("Press any key to continue");
+            getch();
         }
     }
 
