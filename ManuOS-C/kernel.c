@@ -277,42 +277,36 @@ void yatzy() {
             goto yatzy_loop;
             
         } else if (c == '2') { // score
-            c = getch();
-            if (c == '1') {
-                goto yatzy_loop;
+            prints("Where do you want to score?");
+            nl();
+            char sel[10] = {0};
+            i = 0;
+            while (1) {
+                sel[i] = getc();
+                printc(sel[i]);
+                if (sel[i] == NEWLINE) {
+                    sel[i] = '\0';
+                    break;
+                }
+                i++;
             }
-            if (c == '2') {
-                prints("Where do you want to score?");
-                nl();
-                char sel[10] = {0};
-                i = 0;
-                while (1) {
-                    sel[i] = getc();
-                    printc(sel[i]);
-                    if (sel[i] == NEWLINE) {
-                        sel[i] = '\0';
-                        break;
-                    }
-                    i++;
-                }
-                if (m_strcmp(sel, "ones") == 0) {
-                    scoreboard[0] = dicesone;
-                }
-                if (m_strcmp(sel, "twos") == 0) {
-                    scoreboard[1] = dicestwo;
-                }
-                if (m_strcmp(sel, "threes") == 0) {
-                    scoreboard[2] = dicesthree;
-                }
-                if (m_strcmp(sel, "fours") == 0) {
-                    scoreboard[3] = dicesfour;
-                }
-                if (m_strcmp(sel, "fives") == 0) {
-                    scoreboard[4] = dicesfive;
-                }
-                if (m_strcmp(sel, "sixes") == 0) {
-                    scoreboard[5] = dicessix;
-                }
+            if (m_strcmp(sel, "ones") == 0) {
+                scoreboard[0] = dicesone;
+            }
+            if (m_strcmp(sel, "twos") == 0) {
+                scoreboard[1] = dicestwo;
+            }
+            if (m_strcmp(sel, "threes") == 0) {
+                scoreboard[2] = dicesthree;
+            }
+            if (m_strcmp(sel, "fours") == 0) {
+                scoreboard[3] = dicesfour;
+            }
+            if (m_strcmp(sel, "fives") == 0) {
+                scoreboard[4] = dicesfive;
+            }
+            if (m_strcmp(sel, "sixes") == 0) {
+                scoreboard[5] = dicessix;
             }
             
         } else if (c == '3') {
