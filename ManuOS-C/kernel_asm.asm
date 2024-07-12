@@ -67,16 +67,16 @@ print_str: ; Parameters: bx = pointer to string Returns: none
 ;Syntax:
 ; + - increment main register
 ; - - decrement main register
-; > - push main register
-; < - pop main register
+; } - push main register
+; { - pop main register
 ; . - print main register
 ; , - read to the main register
 ; & - jump to location pointed by pointer
 ; [ - pc = pc - cx
 ; ] - pc = pc + cx
 ; ! - invert main register
-; } - increment pointer
-; { - decrement pointer
+; > - increment pointer
+; < - decrement pointer
 ; $ - print pointer
 ; #<char> - load char to main register
 ; ( - loop start, decrement pointer and loop until pointer = 0
@@ -122,9 +122,9 @@ wpp_interpreter:
         je .if_plus
         cmp al, '-'
         je .if_minus
-        cmp al, '>'
+        cmp al, '}'
         je .if_push
-        cmp al, '<'
+        cmp al, '{'
         je .if_pop
         cmp al, '.'
         je .if_print
@@ -138,9 +138,9 @@ wpp_interpreter:
         je .if_jump_forward
         cmp al, '!'
         je .if_invert
-        cmp al, '}'
+        cmp al, '>'
         je .if_increment_pointer
-        cmp al, '{'
+        cmp al, '<'
         je .if_decrement_pointer
         cmp al, '$'
         je .if_print_pointer

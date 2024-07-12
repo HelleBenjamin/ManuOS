@@ -24,16 +24,16 @@ Registers:
 Syntax:
     + - increment main register
     - - decrement main register
-    > - push main register
-    < - pop main register
+    } - push main register
+    { - pop main register
     . - print main register
     , - read to the main register
     & - jump to location pointed by pointer
     [ - pc = pc - cx
     ] - pc = pc + cx
     ! - invert main register
-    } - increment pointer
-    { - decrement pointer
+    > - increment pointer
+    < - decrement pointer
     $ - print pointer
     #[char] - load char to the main register
     ( - loop start, decrement pointer and loop until pointer = 0
@@ -73,11 +73,11 @@ void Interpreter() {
             case '-':
                 bl--;
                 break;
-            case '>':
+            case '}':
                 sp--;
                 stack[sp] = bl;
                 break;
-            case '<':
+            case '{':
                 bl = stack[sp];
                 sp++;
                 break;
@@ -99,10 +99,10 @@ void Interpreter() {
             case '!':
                 bl = ~bl;
                 break;
-            case '}':
+            case '>':
                 cx++;
                 break;
-            case '{':
+            case '<':
                 cx--;
                 break;
             case '$':
