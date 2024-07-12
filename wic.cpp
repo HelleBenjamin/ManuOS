@@ -5,13 +5,14 @@
 #include <vector>
 #include <bitset>
 
-#define helpMessage "-c <source file> -h help -v version"
+#define helpMessage "-c <source file> -o <output file> -h help -v version -MODE=<mode>"
 #define supportedArchitectures "Supported architectures: X86"
-#define version "Wuf++ compiler v0.1"
+#define version "Wuf++ Interpreter Compiler v0.1"
 
 using namespace std;
 
 vector<char> program; // source program
+
 
 
 /* Wuf++ Interpreter Compiler, WIC
@@ -44,11 +45,12 @@ Syntax:
     / - add main register and pointer, bx = bx + cx
     \ - sub main register and pointer, bx = bx - cx
     @ - load 0 to the main register
-    ^ - swap bl with bh, bh <- bl
+    ^- swap bl with bh, bh <- bl
 */
 
 string filename;
 ifstream source_file;
+ofstream output_file; // output file
 
 uint16_t bx = 0;
 uint16_t cx,dx = 0;
@@ -83,17 +85,19 @@ void Interpreter() {
                 break;
             case '}':
                 sp--;
-                stack[sp] = ();
+                stack[sp] = bx & 0xFF;
+                sp --;
+                stack[sp] = (bx & 0xFF00) >> 8;
                 break;
             case '{':
-                bl = stack[sp];
-                sp++;
+                bx = (stack[sp] << 8) | stack[sp+1];
+                sp += 2;
                 break;
             case '.':
-                cout << char(bl);
+                cout << char(bx);
                 break;
             case ',':
-                cin >> bl;
+                cin >> bx;
                 break;
             case '&':
                 pc = cx;
@@ -105,7 +109,7 @@ void Interpreter() {
                 pc = pc + cx;
                 break;
             case '!':
-                bl = ~bl;
+                bx = ~bx;
                 break;
             case '>':
                 cx++;
@@ -117,7 +121,7 @@ void Interpreter() {
                 cout << dectohex(cx) << endl;
                 break;
             case '#':
-                bl = program[pc+1];
+                bx = program[pc+1];
                 pc++;
                 break;
             case '(': 
@@ -132,15 +136,13 @@ void Interpreter() {
                     break;
                 }
             case '"':
-                sp--;
-                stack[sp] = bl;
-                bl = (cx & 0xFF);
-                cx = (cx >> 8) | stack[sp];
-                sp++;
+                dx = bx;
+                bx = cx;
+                cx = dx;
                 break;
             case '%':
                 pc++;
-                if (bl == program[pc]) {
+                if (bx == program[pc]) {
                     pc = cx -1;
                     break;
                 }
@@ -149,6 +151,19 @@ void Interpreter() {
                 halt = true;
                 break;
             case '/':
+                bx = bx + cx;
+                break;
+            case '\\':
+                bx = bx - cx;
+                break;
+            case '@':
+                bx = 0;
+                break;
+            case '^':
+                dx = bx;
+                bx = (dx & 0xFF00);
+                bx = (dx & 0xFF00) >> 8;
+                break;
             default:
                 cout << "Error: Unknown command: '" << program[pc] << "' at position: " << pc << "" << endl;
                 break;
