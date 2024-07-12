@@ -53,6 +53,16 @@ void printi(int i) {
     }
 }
 
+void kernel_panic(char *msg) {
+    cls();
+    prints("KERNEL PANIC: ");
+    prints(msg);
+    nl();
+    while (1) {
+        sleepms(100);
+    }
+}
+
 char getc() {
     char c = 0;
     getchar();
@@ -119,15 +129,7 @@ unsigned long random(unsigned long min, unsigned long max) {
 }
 
 int diceroll() {
-    while (1) {
-        int dice = random(1, 6);
-        if (dice < 6 && dice > 1) {
-            return dice;
-        } else {
-            continue;
-        }       
-    }
-
+    return random(1, 6);
 }
 
 void yatzy() {
@@ -173,23 +175,25 @@ void yatzy() {
         }
         yatzy_loop:
         for (int i = 0; i < 5; i++) {
-            if (dices[i] == 1) {
-                dicesone++;
-            }
-            if (dices[i] == 2) {
-                dicestwo++;
-            }
-            if (dices[i] == 3) {
-                dicesthree++;
-            }
-            if (dices[i] == 4) {
-                dicesfour++;
-            }
-            if (dices[i] == 5) {
-                dicesfive++;
-            }
-            if (dices[i] == 6) {
-                dicessix++;
+            switch(dices[i]) {
+                case 1:
+                    dicesone++;
+                    break;
+                case 2:
+                    dicestwo += 2;
+                    break;
+                case 3:
+                    dicesthree += 3;
+                    break;
+                case 4:
+                    dicesfour += 4;
+                    break;
+                case 5:
+                    dicesfive += 5;
+                    break;
+                case 6:
+                    dicessix += 6;
+                    break;
             }
         }
         nl();
@@ -295,19 +299,19 @@ void yatzy() {
                     scoreboard[0] = dicesone;
                 }
                 if (m_strcmp(sel, "twos") == 0) {
-                    scoreboard[1] = dicesone;
+                    scoreboard[1] = dicestwo;
                 }
                 if (m_strcmp(sel, "threes") == 0) {
-                    scoreboard[2] = dicesone;
+                    scoreboard[2] = dicesthree;
                 }
                 if (m_strcmp(sel, "fours") == 0) {
-                    scoreboard[3] = dicesone;
+                    scoreboard[3] = dicesfour;
                 }
                 if (m_strcmp(sel, "fives") == 0) {
-                    scoreboard[4] = dicesone;
+                    scoreboard[4] = dicesfive;
                 }
                 if (m_strcmp(sel, "sixes") == 0) {
-                    scoreboard[5] = dicesone;
+                    scoreboard[5] = dicessix;
                 }
             }
             
