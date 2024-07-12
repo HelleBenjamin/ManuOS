@@ -15,6 +15,8 @@ A hobby os written in C and asm.
 ### Registers:
 - **bx** - main register, bl mainly used
 - **cx** - main pointer
+- **sp** - stack pointer
+- **dx** - temp register
 - **pc** - program counter, instruction pointer
 ### Syntax:
 - **+** - increment main register, *bx = bx + 1*
@@ -29,3 +31,10 @@ A hobby os written in C and asm.
 - **!** - invert main register, *bx = ~bx*
 - **>** - increment pointer, *cx = cx + 1*
 - **<** - decrement pointer, *cx = cx - 1*
+- **$** - print pointer as ascii character
+- **#[char]** - load char to main register
+- **(** - loop start, loads dx with loop start address, *dx = pc*
+- **)** - loop end, decrement pointer and loop until pointer = 0, *cx = cx - 1, if cx != 0 jump to dx*
+- **"** - swap registers, *bx = dx, dx = bx*
+- **%[char]** - compare main register with char, jump if equal to location pointed by pointer, *if bx == char jump to cx*
+- **=** - halt program, *halt = 1*
