@@ -11,7 +11,7 @@ A hobby os written in C and asm.
 - Text editor
 
 ## Wuf++ language
-**Wuf++**(wuf plus plus) is a low-level programming language
+**Wuf++**(wuf plus plus) is a low-level programming language. Can be interpreted or compiled.
 ### Registers:
 - **bx** - main register, bl mainly used
 - **cx** - main pointer
