@@ -143,7 +143,7 @@ void Interpreter() {
                 halt = true;
                 break;
             default:
-                cout << "Error: Unknown command: " << program[pc] << " At position: " << pc << "" << endl;
+                cout << "Error: Unknown command: '" << program[pc] << "' at position: " << pc << "" << endl;
                 break;
         }
     }
