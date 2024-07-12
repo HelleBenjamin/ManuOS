@@ -42,3 +42,28 @@ A hobby os written in C and asm.
 - **\\** - sub main register and pointer, *bx = bx - cx*
 - **@** - load zero to main register, *bx = 0*
 - **^** - swap bl with bh, *bx = bh, bh = bl*
+
+### Code examples:
+#### Hello World
+```wpp
+#H.#e.l.#l.#o.# #W.#o.#r.#l.#d.=
+```
+
+## WIC
+**WIC**(wuf++ interpreter compiler) is a compiler and interpreter for the Wuf++ language. A file can be compiled or interpreted. Nasm is used for compilation. C++ is used for interpretation.
+### Command line arguments:
+- **-s** - source file
+- **-o** - output file
+- **-c** - compile
+- **-i** - interpret
+- **-h** - help
+- **-v** - version
+
+An example of using the compiler:
+```bash
+wic -c -s example.wpp -o example
+```
+An example of using the interpreter:
+```bash
+wic -i -s example.wpp
+```
