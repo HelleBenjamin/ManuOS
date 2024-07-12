@@ -52,6 +52,8 @@ A hobby os written in C and asm.
 ```wpp
 >(#H.#e.#l.#l.#o.# .#W.#o.#r.#l.#d.)=
 ```
+**Note:** loops seems like it loops one more than it should be. Its because when it reaches the end of the loop it jumps back to the start of the loop.
+
 In assembly:
 ```asm
 global _start
@@ -86,6 +88,7 @@ _start:
      mov ebx, 0
      mov ecx, 0
      mov edx, 0
+     inc ecx
      inc ecx
 loop0:
      dec ecx

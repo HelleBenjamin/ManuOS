@@ -224,11 +224,12 @@ wpp_interpreter:
             jmp .interpret
         .if_loop_start:
             mov dx, di
+            ;dec cx
             jmp .interpret
         .if_loop_end:
-            cmp cx, 0
-            je .interpret
             dec cx
+            cmp cx, 0
+            jle .interpret
             mov di, dx
             jmp .interpret
         .if_swap:

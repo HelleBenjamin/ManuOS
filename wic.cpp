@@ -130,11 +130,12 @@ void Interpreter() {
                 break;
             case '(': 
                 dx = pc;
+                cx--;
                 break;
             case ')':
                 if (cx != 0) {
-                    pc = dx;
                     cx--;
+                    pc = dx;
                     break;
                 } if (cx == 0) {
                     break;
@@ -267,7 +268,6 @@ void compileX86() {
                 compiledProgram.push_back("     mov bx, '" + std::string(1, program[i+1]) + "'");
                 break;
             case '(': 
-                compiledProgram.push_back("     inc ecx");
                 compiledProgram.push_back("loop" + std::to_string(loopLabel) + ":");
                 loopLabel++;
                 break;
