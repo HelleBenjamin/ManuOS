@@ -135,8 +135,10 @@ void Interpreter() {
                 sp++;
                 break;
             case '%':
-                if (bl == program[pc+1]) {
-                    pc = cx;
+                pc++;
+                if (bl == program[pc]) {
+                    pc = cx -1;
+                    break;
                 }
                 break;
             case '=':
