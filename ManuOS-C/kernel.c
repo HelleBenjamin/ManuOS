@@ -230,8 +230,66 @@ void yatzy() {
             }
             goto yatzy_loop;
             
-        } else if (c == '2') {
-            break;
+        } else if (c == '2') { // score
+            prints("--Scoreboard--");
+            nl();
+            prints("Ones: ");
+            printi(scoreboard[0]);
+            nl();
+            prints("Twos: ");
+            printi(scoreboard[1]);
+            nl();
+            prints("Threes: ");
+            printi(scoreboard[2]);
+            nl();
+            prints("Fours: ");
+            printi(scoreboard[3]);
+            nl();
+            prints("Fives: ");
+            printi(scoreboard[4]);
+            nl();
+            prints("Sixes: ");
+            printi(scoreboard[5]);
+            nl();
+            prints("Sum: ");
+            for (int i = 0; i < 5; i++) {
+                scoreboard[6] = scoreboard[0] + scoreboard[1] + scoreboard[2] + scoreboard[3] + scoreboard[4] + scoreboard[5];
+            }
+            printi(scoreboard[6]);
+            nl();
+            prints("Three of a kind: ");
+            printi(scoreboard[8]);
+            nl();
+            prints("Four of a kind: ");
+            printi(scoreboard[9]);
+            nl();
+            prints("Full house: ");
+            printi(scoreboard[10]);
+            nl();
+            prints("Small straight: ");
+            printi(scoreboard[11]);
+            nl();
+            prints("Large straight: ");
+            printi(scoreboard[12]);
+            nl();
+            prints("Chance: ");
+            printi(scoreboard[13]);
+            nl();
+            prints("Yahtzee: ");
+            printi(scoreboard[14]);
+            nl();
+            prints("Total: ");
+            printi(scoreboard[15]);
+            nl();
+            prints("1. Reroll");
+            nl();
+            prints("2. Score");
+            nl();
+            c = getch();
+            if (c == '1') {
+                goto yatzy_loop;
+            }
+            
         }
     }
 
