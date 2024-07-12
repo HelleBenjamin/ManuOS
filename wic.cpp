@@ -267,12 +267,13 @@ void compileX86() {
                 compiledProgram.push_back("     mov bx, '" + std::string(1, program[i+1]) + "'");
                 break;
             case '(': 
+                compiledProgram.push_back("     inc ecx");
                 compiledProgram.push_back("loop" + std::to_string(loopLabel) + ":");
-                compiledProgram.push_back("     dec ecx");
                 loopLabel++;
                 break;
             case ')':
                 compiledProgram.push_back("     cmp ecx, 0");
+                compiledProgram.push_back("     dec ecx");
                 compiledProgram.push_back("     jne loop" + std::to_string(loopLabel-1));
                 break;
             case '"':
