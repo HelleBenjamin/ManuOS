@@ -11,7 +11,7 @@ A hobby os written in C and asm.
 - Text editor
 
 ## Wuf++ language
-**Wuf++**(wuf plus plus) is a low-level programming language. Can be interpreted or compiled.
+**Wuf++**(wuf plus plus) is a low-level programming language. Can be interpreted or compiled. It is possible to run wpp programs on any cpu architecture, for example x86 and Z80. Custom compilers are also possible.
 ### Registers:
 - **bx** - main register, bl mainly used
 - **cx** - main pointer
