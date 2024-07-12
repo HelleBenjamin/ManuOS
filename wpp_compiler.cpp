@@ -152,19 +152,19 @@ void compileX86() {
                 compiledProgram.push_back("     mov bx, '" + std::string(1, program[i+1]) + "'");
                 break;
             case '(': 
-                compiledProgram.push_back("loop" + std::string(1, loopLabel) + ":");
+                compiledProgram.push_back("loop" + std::to_string(loopLabel) + ":");
                 compiledProgram.push_back("     dec ecx");
                 loopLabel++;
                 break;
             case ')':
                 compiledProgram.push_back("     cmp ecx, 0");
-                compiledProgram.push_back("     jne loop" + std::string(1, loopLabel));
+                compiledProgram.push_back("     jne loop" + std::to_string(loopLabel-1));
                 break;
             case '"':
                 compiledProgram.push_back("     xchg ebx, ecx");
                 break;
             case '%':
-                compiledProgram.push_back("     cmp '" + std::string(1, program[i+1]) + "', %ebx");
+                compiledProgram.push_back("     cmp ebx, '" + std::to_string(program[i+1]) + "'");
                 compiledProgram.push_back("     je jp_cx");
                 break;
             case '=':

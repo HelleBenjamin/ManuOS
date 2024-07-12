@@ -30,21 +30,17 @@ _start:
      mov ebx, 0
      mov ecx, 0
      mov edx, 0
-     mov bx, 'H'
+     inc ecx
+     inc ecx
+     inc ecx
+     mov bx, '0'
+loop0:
+     dec ecx
      call printc
-     mov bx, 'e'
-     call printc
-     mov bx, 'l'
-     call printc
-     mov bx, 'l'
-     call printc
-     mov bx, 'o'
-     call printc
-     mov bx, 'r'
-     call printc
-     mov bx, 'l'
-     call printc
-     mov bx, 'd'
+     inc ebx
+     inc ebx
+     cmp ecx, 0
+     jne loop0
      mov eax, 1
      mov ebx, 0
      int 0x80
