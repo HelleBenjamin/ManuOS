@@ -118,6 +118,8 @@ wpp_interpreter:
         cmp di, 0
         je .end_interpreter
         inc di
+        cmp al, ' '; skip spaces
+        je .interpret
         cmp al, '+'
         je .if_plus
         cmp al, '-'

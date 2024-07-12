@@ -47,7 +47,7 @@ string filename;
 ifstream source_file;
 
 uint8_t bl = 0;
-uint16_t cx = 0;
+uint16_t cx,dx = 0;
 unsigned int pc = 0;
 uint8_t stack[1000] = {0};
 unsigned int sp = 1000;
@@ -67,6 +67,10 @@ void Interpreter() {
     for(pc = 0; pc < program.size(); pc++) {
         if(halt) break;
         switch (program[pc]) {
+            case '\n':
+                break;
+            case ' ':
+                break;
             case '+':
                 bl++;
                 break;
@@ -113,21 +117,16 @@ void Interpreter() {
                 pc++;
                 break;
             case '(': 
-                sp--;
-                stack[sp] = pc & 0xFF;
-                sp--;
-                stack[sp] = pc >> 8;
+                dx = pc;
                 break;
             case ')':
                 if (cx != 0) {
-                    pc = (stack[sp] << 8) | stack[sp+1];
-                    sp += 2;
+                    pc = dx;
                     cx--;
+                    break;
                 } if (cx == 0) {
-                    sp += 2;
                     break;
                 }
-                break;
             case '"':
                 sp--;
                 stack[sp] = bl;
@@ -144,6 +143,7 @@ void Interpreter() {
                 halt = true;
                 break;
             default:
+                cout << "Error: Unknown command: " << program[pc] << " At position: " << pc << "" << endl;
                 break;
         }
     }
