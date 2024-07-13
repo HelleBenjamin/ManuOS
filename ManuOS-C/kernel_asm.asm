@@ -172,7 +172,6 @@ wpp_interpreter:
         je .if_ld_zero
         cmp al, '^'
         je .if_swp_bh_bl
-        jne .interpret
         .if_read:
             .read_loop:
                 call getchar

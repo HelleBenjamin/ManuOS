@@ -272,6 +272,7 @@ void compileX86() {
                 break;
             case '#':
                 compiledProgram.push_back("     mov bx, '" + std::string(1, program[i+1]) + "'");
+                i++;
                 break;
             case '(': 
                 compiledProgram.push_back("loop" + std::to_string(loopLabel) + ":");
@@ -308,6 +309,7 @@ void compileX86() {
                 compiledProgram.push_back("     xchg bl, bh");
                 break;
             default:
+                cout << "Error: " << program[i] << " at position " << i << endl;
                 break;
         }
     }
