@@ -356,8 +356,6 @@ void compileX86() {
         //cout << compiledProgram[i] << endl;
     }
     cout << "Compiled" << endl;
-    output_file.close();
-    source_file.close();
 }
 
 int main(int argc, char *argv[]) {
@@ -397,17 +395,20 @@ int main(int argc, char *argv[]) {
         if (string(argv[i]) == "-?") {
             cout << syntax << endl;
         }
-        if((argv[i]) == 0) {
-        }
-        if (mode == 0){
+    }
+    if (source_file.is_open() && output_file.is_open()) {
+        if (mode == 0) {
             compileX86();
             //system(("./wic -s " + source_name + " -o " + output_name + ".asm").c_str());
             system(("nasm -f elf32 -o " + output_name + ".o " + source_name + ".asm").c_str());
             system(("ld -m elf_i386 -o " + output_name + " -static -nostdlib " + output_name + ".o").c_str());
             system(("rm " + output_name + ".o").c_str());
-        if (mode == 1)
+        }
+        if (mode == 1) {
             Interpreter();
         }
+        source_file.close();
+        output_file.close();
     }
     return 0;
 }
