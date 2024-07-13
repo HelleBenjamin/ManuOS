@@ -25,8 +25,8 @@ global getchar
 getchar:
     mov ah, 0x00
     int 0x16
-    cmp al, 0x0d
-    je nl
+    ;cmp al, 0x0d
+    ;je nl
     ret
 global nl
 nl:
@@ -172,6 +172,7 @@ wpp_interpreter:
         je .if_ld_zero
         cmp al, '^'
         je .if_swp_bh_bl
+        jne .interpret
         .if_read:
             .read_loop:
                 call getchar
@@ -235,10 +236,11 @@ wpp_interpreter:
             xchg bl, cl
             jmp .interpret
         .if_compare:
-            mov ah, [di]
+            mov dl, [di]
             inc di
-            cmp bl, ah
+            cmp bl, dl
             jne .interpret
+            ; Comparison successful, jump to address in cx
             mov di, cx
             jmp .interpret
         .if_halt:

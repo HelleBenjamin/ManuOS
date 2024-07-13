@@ -364,6 +364,7 @@ void main(void) {
             printc(prompt[i]);
             if (prompt[i] == NEWLINE) {
                 prompt[i] = '\0';
+                nl();
                 break;
             }
             if (prompt[i] == 0x08) {

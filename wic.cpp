@@ -225,6 +225,8 @@ void compileX86() {
     compiledProgram.push_back("     mov ebx, 0");
     compiledProgram.push_back("     mov ecx, 0");
     compiledProgram.push_back("     mov edx, 0");
+    compiledProgram.push_back("main:");
+    int lineLabel = 0;
     for(int i = pc; i < program.size(); i++) {
         switch (program[i]) {
             case '\n':
@@ -288,8 +290,10 @@ void compileX86() {
                 compiledProgram.push_back("     xchg ebx, ecx");
                 break;
             case '%':
-                compiledProgram.push_back("     cmp ebx, '" + std::to_string(program[i+1]) + "'");
+                compiledProgram.push_back("     cmp bl, " + std::to_string(program[i+1]));
+                compiledProgram.push_back("     lea edx, [ecx + main]");
                 compiledProgram.push_back("     je jp_cx");
+                i++;
                 break;
             case '=':
                 compiledProgram.push_back("     mov eax, 1");
