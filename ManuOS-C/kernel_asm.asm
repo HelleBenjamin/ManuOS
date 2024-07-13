@@ -98,6 +98,7 @@ wpp_interpreter:
         mov di, wpp_buffer
         mov ecx, 0x100 ; Length of wpp_buffer
         rep stosb 
+        push wpp_buffer
         mov cx, 0x0000 ; Pointer
         mov bx, 0x0000 ; Main register
     .interpreter_loop:
