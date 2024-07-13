@@ -396,19 +396,16 @@ int main(int argc, char *argv[]) {
             cout << syntax << endl;
         }
     }
-    if (source_file.is_open() && output_file.is_open()) {
-        if (mode == 0) {
-            compileX86();
-            //system(("./wic -s " + source_name + " -o " + output_name + ".asm").c_str());
-            system(("nasm -f elf32 -o " + output_name + ".o " + source_name + ".asm").c_str());
-            system(("ld -m elf_i386 -o " + output_name + " -static -nostdlib " + output_name + ".o").c_str());
-            system(("rm " + output_name + ".o").c_str());
-        }
-        if (mode == 1) {
-            Interpreter();
-        }
-        source_file.close();
-        output_file.close();
+    if (source_file.is_open() && mode == 0 && output_file.is_open()) {
+        compileX86();
+        //system(("./wic -s " + source_name + " -o " + output_name + ".asm").c_str());
+        system(("nasm -f elf32 -o " + output_name + ".o " + source_name + ".asm").c_str());
+        system(("ld -m elf_i386 -o " + output_name + " -static -nostdlib " + output_name + ".o").c_str());
+        system(("rm " + output_name + ".o").c_str());
+    }if (mode == 1 && source_file.is_open()) {
+        Interpreter();
     }
+    source_file.close();
+    output_file.close();
     return 0;
 }
