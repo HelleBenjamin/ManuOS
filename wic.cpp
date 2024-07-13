@@ -105,6 +105,10 @@ void interpret(char *InterpretedProgram) {
                 break;
             case ' ':
                 break;
+            case 'i':
+                break;
+            case 'o':
+                break;
             case '+':
                 bx++;
                 break;
