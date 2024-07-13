@@ -128,6 +128,38 @@ unsigned long random(unsigned long min, unsigned long max) {
     return min + random_value;
 }
 
+void manu() {
+    prints("Manu");
+    nl();
+    char manu[28][28] = {
+    "░░░░░▒▓▓▒░░░░░░░▒░░░░░ ░░░  ", 
+    "░░░░░░▒▒▒░░░░░░░▒░░░░░  ░░  ", 
+    "░░░▒▓▓▓▒░▒▓▓▓▒▓▓▓▒░░░░  ░░  ", 
+    "░░▓▓▓▓▓████▓▒░▒▓▓▓▓▒░░  ░░  ", 
+    "░░░▒▒███████▓▓██████▓▓▒░ ░  ",
+    "░░▓██████████▓████████▓█▓▒░ ",
+    "░░███████████▓████▓███▓██▓░ ",
+    "░░███████████▓████▓▓▓▓███▓░░",
+    "░░██████████▓▒▓██████▓████▒▓",
+    "░░█████████▓▒▒▓█████▓▓███▓░▒",
+    "▒▒▓███████▓▒▒▒▓▓███▓▓▓▓██▓░░",
+    "▓▒▓▓▓▓████▓▓███▓▓███▓█▒░▒▓▒░",
+    "▒▒██▒▓█████████▓▓▓██▓▓▒░░░░▒",
+    "▓▒██▒▓██████████▓▓██▓▓▒░░░▒▒",
+    "█▓█▓▓███████████████▓▓▒▓▒▓▓▒",
+    "████████████████████▓▓▓▓▓▒▒▒",
+    "▓▓▓███████████████▓▓▓▓▓▓▓▒▓▒",
+    "▓▓▓▓▓███████████▓▓▓▓▓▓▓▓▓▓▓▓",
+    "▓▓▓▓▓▓▓▓█▓█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+    "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▓▓▓▓▓",
+    };
+
+    for (int i = 0; i < 28; i++) {
+        prints(manu[i]);
+        nl();
+    }
+}
+
 int diceroll() {
     return random(1, 6);
 }
@@ -230,13 +262,19 @@ void main(void) {
         }
 
         if (m_strcmp(prompt, "version") == 0) {
-            prints("ManuOS " VERSION "\n");
+            prints("ManuOS " VERSION);
+            nl();
         } else if (m_strcmp(prompt, "help") == 0) {
             prints(HELP_MSG);
+            nl();
         } else if (m_strcmp(prompt, "wpp") == 0) {
             wpp_interpreter();
         } else if (m_strcmp(prompt, "dices") == 0) {
             rdice();
+        } else if (m_strcmp(prompt, "cls") == 0) {
+            cls();
+        } else if (m_strcmp(prompt, "manu") == 0) {
+            manu();
         }
     }
 }
