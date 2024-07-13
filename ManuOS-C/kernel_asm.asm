@@ -6,6 +6,7 @@ section .data
     fmsg db 'Program finished, press enter to proceed', 0
 section .bss
     wpp_buffer resb 0x100
+    wpp_buffer_addr resb 0x08
 section .text
 global _start
 extern main
@@ -98,7 +99,7 @@ wpp_interpreter:
         mov di, wpp_buffer
         mov ecx, 0x100 ; Length of wpp_buffer
         rep stosb 
-        push wpp_buffer
+        mov dword [wpp_buffer_addr], wpp_buffer
         mov cx, 0x0000 ; Pointer
         mov bx, 0x0000 ; Main register
     .interpreter_loop:
@@ -244,8 +245,7 @@ wpp_interpreter:
             jne .interpret
             ;mov al, '1'
             ;call printchr
-            pop ax
-            mov di, [cx + ax]
+            mov di, [ecx + wpp_buffer_addr]
             jmp .interpret
         .if_halt:
             jmp .end_interpreter
