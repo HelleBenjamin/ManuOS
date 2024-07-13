@@ -5,7 +5,7 @@
 #include <vector>
 #include <bitset>
 
-#define helpMessage "-s <source file> -o <output file> -h help -v version -c compile -i interpret"
+#define helpMessage "-s <source file> -o <output file> -h help -v version -c compile -i interpret -? print syntax -I interpret without file"
 #define supportedArchitectures "Supported architectures: X86"
 #define version "Wuf++ Interpreter Compiler v0.1"
 
@@ -13,6 +13,7 @@ using namespace std;
 
 vector<char> program; // source program
 vector<string> compiledProgram; // compiled program
+bool mode = 0; //0 = compile, 1 = interpret
 
 
 
@@ -49,6 +50,33 @@ Syntax:
     ^- swap bl with bh, bh <- bl
 */
 
+string syntax = {
+    "Syntax:\n"
+    "+ - increment main register\n"
+    "- - decrement main register\n"
+    "} - push main register\n"
+    "{ - pop main register\n"
+   ". - print main register\n"
+   ", - read to the main register\n"
+   "& - jump to location pointed by pointer\n"
+    "[ - pc = pc - cx\n"
+   "] - pc = pc + cx\n"
+   "! - invert main register\n"
+   "> - increment pointer\n"
+   "< - decrement pointer\n"
+   "$ - print pointer\n"
+   "#[char] - load char to the main register\n"
+   "( - loop start, decrement pointer and loop until pointer = 0\n"
+   ") - loop end\n"
+   "\" - swap registers\n"
+   "#[char] - compare main register with char, jump if equal to location pointed by pointer\n"
+   "= - halt\n"
+   "/ - add main register and pointer, bx = bx + cx\n"
+   "\\ - sub main register and pointer, bx = bx - cx\n"
+   "@ - load 0 to the main register\n"
+   "^- swap bl with bh, bh <- bl\n"
+};
+
 string filename;
 ifstream source_file;
 ofstream output_file; // output file
@@ -68,13 +96,9 @@ string dectohex(int num) {
     return ss.str();
 }
 
-void Interpreter() {
-    char c;
-    while(source_file.get(c)) {
-        program.push_back(c);
-    }
-    source_file.close();
-    for(pc = 0; pc < program.size(); pc++) {
+void interpret(char *InterpretedProgram) {
+    int pg_size = string(InterpretedProgram).length();
+    for (int pc = 0; pc < pg_size; pc++) {
         if(halt) break;
         switch (program[pc]) {
             case '\n':
@@ -176,6 +200,15 @@ void Interpreter() {
     }
 }
 
+void Interpreter() {
+    char c;
+    while(source_file.get(c)) {
+        program.push_back(c);
+    }
+    source_file.close();
+    interpret(program.data());
+}
+
 void compileX86() {
     char c;
     int pc = 0;
@@ -254,7 +287,7 @@ void compileX86() {
             case ']':
                 compiledProgram.push_back("     call .get_pc" + std::to_string(get_pc));
                 compiledProgram.push_back("     .get_pc" + std::to_string(get_pc) + ": pop edx");
-                compiledProgram.push_back("     add edx, [ecx + main]");
+                compiledProgram.push_back("     add edx, ecx");
                 compiledProgram.push_back("     jmp edx");
                 get_pc++;
                 break;
@@ -356,13 +389,23 @@ int main(int argc, char *argv[]) {
             cout << supportedArchitectures << endl;
         }
         if(string(argv[i]) == "-c") {
+            mode = 0;
+        }
+        if(string(argv[i]) == "-i") {
+            mode = 1;
+        }
+        if (string(argv[i]) == "-?") {
+            cout << syntax << endl;
+        }
+        if((argv[i]) == 0) {
+        }
+        if (mode == 0){
             compileX86();
             //system(("./wic -s " + source_name + " -o " + output_name + ".asm").c_str());
             system(("nasm -f elf32 -o " + output_name + ".o " + source_name + ".asm").c_str());
             system(("ld -m elf_i386 -o " + output_name + " -static -nostdlib " + output_name + ".o").c_str());
             system(("rm " + output_name + ".o").c_str());
-        }
-        if(string(argv[i]) == "-i") {
+        if (mode == 1)
             Interpreter();
         }
     }
