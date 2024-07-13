@@ -223,7 +223,7 @@ void compileX86() {
     compiledProgram.push_back("     mov ecx, 0");
     compiledProgram.push_back("     mov edx, 0");
     compiledProgram.push_back("main:");
-    int lineLabel = 0;
+    int get_pc = 0;
     for(int i = pc; i < program.size(); i++) {
         switch (program[i]) {
             case '\n':
@@ -249,10 +249,14 @@ void compileX86() {
                 compiledProgram.push_back("     call readc");
                 break;
             case '[':
-                compiledProgram.push_back("     sub pc, ecx");
+                compiledProgram.push_back("     sub epc, ecx");
                 break;
             case ']':
-                compiledProgram.push_back("     add pc, ecx");
+                compiledProgram.push_back("     call .get_pc" + std::to_string(get_pc));
+                compiledProgram.push_back("     .get_pc" + std::to_string(get_pc) + ": pop edx");
+                compiledProgram.push_back("     add edx, [ecx + main]");
+                compiledProgram.push_back("     jmp edx");
+                get_pc++;
                 break;
             case '!':
                 compiledProgram.push_back("     not ebx");

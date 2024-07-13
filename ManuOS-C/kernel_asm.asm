@@ -237,10 +237,12 @@ wpp_interpreter:
             jmp .interpret
         .if_compare:
             mov dl, [di]
-            inc di
             cmp bl, dl
+            ;mov al, [di]
+            ;call printchr
             jne .interpret
-            ; Comparison successful, jump to address in cx
+            ;mov al, '1'
+            ;call printchr
             mov di, cx
             jmp .interpret
         .if_halt:
