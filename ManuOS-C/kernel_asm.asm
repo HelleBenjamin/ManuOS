@@ -121,12 +121,6 @@ wpp_interpreter:
         mov di, wpp_buffer
         call nl
         mov si, wpp_buffer
-        .print_program:
-            mov al, [si]
-            call printchr
-            inc si
-            cmp al, 0
-            jne .print_program
         call nl
     .interpret:
         mov al, [di]
