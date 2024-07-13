@@ -178,6 +178,7 @@ void Interpreter() {
 
 void compileX86() {
     char c;
+    int pc = 0;
     int loopLabel = 0;
     while(source_file.get(c)) {
         program.push_back(c);
@@ -190,36 +191,41 @@ void compileX86() {
     compiledProgram.push_back("jp_cx:");
     compiledProgram.push_back("     push cx");
     compiledProgram.push_back("     ret");
+    if (program[pc] == 'i') {
+        compiledProgram.push_back("readc:");
+        compiledProgram.push_back("     mov edi, ecx");
+        compiledProgram.push_back("     mov eax, 0x3");
+        compiledProgram.push_back("     mov ebx, 0x0");
+        compiledProgram.push_back("     mov ecx, ebx");
+        compiledProgram.push_back("     mov edx, 1");
+        compiledProgram.push_back("     int 0x80");
+        compiledProgram.push_back("     cmp ebx, 0");
+        compiledProgram.push_back("     je readc");
+        compiledProgram.push_back("     mov ecx, edi");
+        compiledProgram.push_back("     ret");        
+        pc++;
+    }
+    if (program[pc] == 'o') {
+        compiledProgram.push_back("printc:");
+        compiledProgram.push_back("     mov edi, ecx");
+        compiledProgram.push_back("     push ebx");   
+        compiledProgram.push_back("     mov eax, 0x4");
+        compiledProgram.push_back("     mov ebx, 0x1");
+        compiledProgram.push_back("     mov ecx, esp");
+        compiledProgram.push_back("     mov edx, 1");
+        compiledProgram.push_back("     int 0x80");
+        compiledProgram.push_back("     pop ebx");
+        compiledProgram.push_back("     mov ecx, edi");
+        compiledProgram.push_back("     ret");
+        pc++;
+    }
 
-    compiledProgram.push_back("printc:");
-    compiledProgram.push_back("     mov edi, ecx");
-    compiledProgram.push_back("     push ebx");   
-    compiledProgram.push_back("     mov eax, 0x4");
-    compiledProgram.push_back("     mov ebx, 0x1");
-    compiledProgram.push_back("     mov ecx, esp");
-    compiledProgram.push_back("     mov edx, 1");
-    compiledProgram.push_back("     int 0x80");
-    compiledProgram.push_back("     pop ebx");
-    compiledProgram.push_back("     mov ecx, edi");
-    compiledProgram.push_back("     ret");
-
-    compiledProgram.push_back("readc:");
-    compiledProgram.push_back("     mov edi, ecx");
-    compiledProgram.push_back("     mov eax, 0x3");
-    compiledProgram.push_back("     mov ebx, 0x0");
-    compiledProgram.push_back("     mov ecx, ebx");
-    compiledProgram.push_back("     mov edx, 1");
-    compiledProgram.push_back("     int 0x80");
-    compiledProgram.push_back("     cmp ebx, 0");
-    compiledProgram.push_back("     je readc");
-    compiledProgram.push_back("     mov ecx, edi");
-    compiledProgram.push_back("     ret");
 
     compiledProgram.push_back("_start:");
     compiledProgram.push_back("     mov ebx, 0");
     compiledProgram.push_back("     mov ecx, 0");
     compiledProgram.push_back("     mov edx, 0");
-    for(int i = 0; i < program.size(); i++) {
+    for(int i = pc; i < program.size(); i++) {
         switch (program[i]) {
             case '\n':
                 break;
@@ -275,6 +281,7 @@ void compileX86() {
                 compiledProgram.push_back("     cmp ecx, 0");
                 compiledProgram.push_back("     dec ecx");
                 compiledProgram.push_back("     jne loop" + std::to_string(loopLabel-1));
+                compiledProgram.push_back("     .loop" + std::to_string(loopLabel-1) + "_end:");
                 break;
             case '"':
                 compiledProgram.push_back("     xchg ebx, ecx");
@@ -306,8 +313,9 @@ void compileX86() {
     }
     for(int i = 0; i < compiledProgram.size(); i++) {
         output_file << compiledProgram[i] << endl;
-        cout << compiledProgram[i] << endl;
+        //cout << compiledProgram[i] << endl;
     }
+    cout << "Compiled" << endl;
     output_file.close();
     source_file.close();
 }

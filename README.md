@@ -46,13 +46,13 @@ A hobby os written in C and asm.
 ### Code examples:
 #### Hello World
 ```wpp
-#H.#e.#l.#l.#o.# .#W.#o.#r.#l.#d.=
+io #H.#e.#l.#l.#o.# .#W.#o.#r.#l.#d.=
 ```
 #### Hello World printed 2x times
 ```wpp
->(#H.#e.#l.#l.#o.# .#W.#o.#r.#l.#d.)=
+io >>(#H.#e.#l..#o.# .#W.#o.#r.#l.#d.)=
 ```
-**Note:** loops seems like it loops one more than it should be. Its because when it reaches the end of the loop it jumps back to the start of the loop.
+**Note:** Include 'io' at the beginning of the program to use input and output functions. This doesn't apply to interpreted programs.
 
 In assembly:
 ```asm
@@ -61,17 +61,6 @@ global _start
 section .text
 jp_cx:
      push cx
-     ret
-printc:
-     mov edi, ecx
-     push ebx
-     mov eax, 0x4
-     mov ebx, 0x1
-     mov ecx, esp
-     mov edx, 1
-     int 0x80
-     pop ebx
-     mov ecx, edi
      ret
 readc:
      mov edi, ecx
@@ -84,6 +73,17 @@ readc:
      je readc
      mov ecx, edi
      ret
+printc:
+     mov edi, ecx
+     push ebx
+     mov eax, 0x4
+     mov ebx, 0x1
+     mov ecx, esp
+     mov edx, 1
+     int 0x80
+     pop ebx
+     mov ecx, edi
+     ret
 _start:
      mov ebx, 0
      mov ecx, 0
@@ -91,14 +91,12 @@ _start:
      inc ecx
      inc ecx
 loop0:
-     dec ecx
      mov bx, 'H'
      call printc
      mov bx, 'e'
      call printc
      mov bx, 'l'
      call printc
-     mov bx, 'l'
      call printc
      mov bx, 'o'
      call printc
@@ -115,6 +113,7 @@ loop0:
      mov bx, 'd'
      call printc
      cmp ecx, 0
+     dec ecx
      jne loop0
      mov eax, 1
      mov ebx, 0
