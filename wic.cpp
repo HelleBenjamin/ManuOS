@@ -189,8 +189,7 @@ void compileX86() {
     compiledProgram.push_back("section .text");
 
     compiledProgram.push_back("jp_cx:");
-    compiledProgram.push_back("     push cx");
-    compiledProgram.push_back("     ret");
+    compiledProgram.push_back("     jmp edx");
     if (program[pc] == 'i') {
         compiledProgram.push_back("readc:");
         compiledProgram.push_back("     mov edi, ecx");
@@ -199,8 +198,6 @@ void compileX86() {
         compiledProgram.push_back("     mov ecx, ebx");
         compiledProgram.push_back("     mov edx, 1");
         compiledProgram.push_back("     int 0x80");
-        compiledProgram.push_back("     cmp ebx, 0");
-        compiledProgram.push_back("     je readc");
         compiledProgram.push_back("     mov ecx, edi");
         compiledProgram.push_back("     ret");        
         pc++;
@@ -290,7 +287,7 @@ void compileX86() {
                 compiledProgram.push_back("     xchg ebx, ecx");
                 break;
             case '%':
-                compiledProgram.push_back("     cmp bl, " + std::to_string(program[i+1]));
+                compiledProgram.push_back("     cmp ebx, " + std::to_string(program[i+1]));
                 compiledProgram.push_back("     lea edx, [ecx + main]");
                 compiledProgram.push_back("     je jp_cx");
                 i++;

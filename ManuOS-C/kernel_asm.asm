@@ -241,7 +241,7 @@ wpp_interpreter:
             cmp bl, dl
             jne .interpret
             ; Comparison successful, jump to address in cx
-            mov di, cx
+            mov di, [cx]
             jmp .interpret
         .if_halt:
             jmp .end_interpreter
