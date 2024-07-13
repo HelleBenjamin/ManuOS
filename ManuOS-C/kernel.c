@@ -1,7 +1,7 @@
 
 #define NEWLINE 0x0d
 #define VERSION "ManuOS 0.0.1-alpha, Puppy-kernel 0.0.1, C-edition"
-#define HELP_MSG "Commands: version, help, wpp, yatzy"
+#define HELP_MSG "Commands: version, help, wpp, dices"
 
 extern void getchar();
 extern void nl();
@@ -133,12 +133,14 @@ int diceroll() {
 }
 void rdice(){
     int dices[5] = {1};
+    int initial_seed;
+    int dicesToReRoll[5] = {0};
     for (int i = 0; i < 5; i++) {
             dices[i] = diceroll();
     }
     while(1){
         dice_loop:
-        int initial_seed = get_bios_time();
+        initial_seed = get_bios_time();
         initialize_seed(initial_seed);
         prints("Your dices are: ");
         for (int i = 0; i < 5; i++) {
@@ -162,8 +164,7 @@ void rdice(){
                 }
                 break;
             case '2':
-                int dicesToReRoll[5] = {0};
-                prints("Select dice to reroll: ");
+                prints("Select dices to reroll: ");
                 int i = 0;
                 while (1) {
                     dicesToReRoll[i] = getc();
@@ -230,13 +231,11 @@ void main(void) {
 
         if (m_strcmp(prompt, "version") == 0) {
             prints("ManuOS " VERSION "\n");
-            nl();
         } else if (m_strcmp(prompt, "help") == 0) {
             prints(HELP_MSG);
-            nl();
         } else if (m_strcmp(prompt, "wpp") == 0) {
             wpp_interpreter();
-        } else if (m_strcmp(prompt, "dice") == 0) {
+        } else if (m_strcmp(prompt, "dices") == 0) {
             rdice();
         }
     }

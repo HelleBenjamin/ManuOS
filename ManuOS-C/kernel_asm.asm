@@ -34,7 +34,7 @@ nl:
     call printchr
     mov al, 0x0d
     call printchr
-    mov al, 0x0d ;inform the kernel that a new line has been printed
+    mov al, 0x0d
     ret
 
 global cls
