@@ -13,7 +13,7 @@ using namespace std;
 
 vector<char> program; // source program
 vector<string> compiledProgram; // compiled program
-bool mode = 0; //0 = compile, 1 = interpret
+int mode = 0; //0 = compile, 1 = interpret, 2 = interpret without file
 
 
 
@@ -202,6 +202,23 @@ void interpret(char *InterpretedProgram) {
                 break;
         }
     }
+}
+
+void interpret_without_file() {
+    char programI[1000];
+    int i = 0;
+    cout << "--Wuf++ interpreter--" << endl;
+    loop:
+    cout << "> ";
+    i = 0;
+    while(1) {
+        cin.get(programI[i]);
+        if (programI[i] == '\n') break;
+        i++;
+    }
+    programI[i] = '=';
+    interpret(programI);
+    goto loop;
 }
 
 void Interpreter() {
@@ -399,6 +416,9 @@ int main(int argc, char *argv[]) {
         if (string(argv[i]) == "-?") {
             cout << syntax << endl;
         }
+        if (string(argv[i]) == "-I") {
+            mode = 2;
+        }
     }
     if (source_file.is_open() && mode == 0 && output_file.is_open()) {
         compileX86();
@@ -406,8 +426,10 @@ int main(int argc, char *argv[]) {
         system(("nasm -f elf32 -o " + output_name + ".o " + source_name + ".asm").c_str());
         system(("ld -m elf_i386 -o " + output_name + " -static -nostdlib " + output_name + ".o").c_str());
         system(("rm " + output_name + ".o").c_str());
-    }if (mode == 1 && source_file.is_open()) {
+    } if (mode == 1 && source_file.is_open()) {
         Interpreter();
+    } if (mode == 2){
+        interpret_without_file();
     }
     source_file.close();
     output_file.close();

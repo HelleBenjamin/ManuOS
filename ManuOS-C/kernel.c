@@ -131,74 +131,15 @@ unsigned long random(unsigned long min, unsigned long max) {
 int diceroll() {
     return random(1, 6);
 }
-
-void yatzy() {
-    cls();
-    prints("YATZY");
-    nl();
-    int scoreboard[16] = {0}; 
-    /* Score board
-        0 - Ones
-        1 - Twos
-        2 - Threes
-        3 - Fours
-        4 - Fives
-        5 - Sixes
-        6 - Sum
-        7 - Bonus
-        8 - Three of a kind
-        9 - Four of a kind
-        10 - Full house
-        11 - Small straight
-        12 - Large straight
-        13 - Chance
-        14 - Yahtzee
-        15 - Total
-    */
-    int dices[5] = {0};
-    int rollsRemaining = 3;
-    unsigned long initial_seed = get_bios_time();
-    initialize_seed(initial_seed);
-    unsigned int dicesone = 0; // how many dices are equal to 1
-    unsigned int dicestwo = 0;
-    unsigned int dicesthree = 0;
-    unsigned int dicesfour = 0;
-    unsigned int dicesfive = 0;
-    unsigned int dicessix = 0;
-    while (1) {
-        prints("Press enter to roll");
-        getch();
-        prints("Rolling...");
-        nl();
-        for (int i = 0; i < 5; i++) {
+void rdice(){
+    int dices[5] = {1};
+    for (int i = 0; i < 5; i++) {
             dices[i] = diceroll();
-        }
-        yatzy_loop:
-        for (int i = 0; i < 5; i++) {
-            switch(dices[i]) {
-                case 1:
-                    dicesone++;
-                    break;
-                case 2:
-                    dicestwo += 2;
-                    break;
-                case 3:
-                    dicesthree += 3;
-                    break;
-                case 4:
-                    dicesfour += 4;
-                    break;
-                case 5:
-                    dicesfive += 5;
-                    break;
-                case 6:
-                    dicessix += 6;
-                    break;
-            }
-        }
-        initial_seed = get_bios_time();
+    }
+    while(1){
+        dice_loop:
+        int initial_seed = get_bios_time();
         initialize_seed(initial_seed);
-        nl();
         prints("Your dices are: ");
         for (int i = 0; i < 5; i++) {
             printc('[');
@@ -207,150 +148,61 @@ void yatzy() {
             printc(' ');
         }
         nl();
-        prints("                 ^   ^   ^   ^   ^");
+        prints("1 - reroll all");
         nl();
-        prints("Dice numbers:    1   2   3   4   5");
+        prints("2 - reroll selected");
         nl();
-        prints("What do you want to do?");
-        nl();
-        prints("1 - Reroll");
-        nl();
-        prints("2 - Score");
-        nl();
-        prints("3 - See scoreboard");
+        prints("3 - exit");
         nl();
         char c = getch();
-        char dicesToReRoll[5] = {0};
-        int i = 0;
-        if (c == '1') {
-            prints("Which dices to reroll?");
-            while (1) {
-                dicesToReRoll[i] = getc();
-                printc(dicesToReRoll[i]);
-                if (dicesToReRoll[i] == NEWLINE) {
+        switch (c){
+            case '1':
+                for (int i = 0; i < 5; i++) {
+                    dices[i] = diceroll();
+                }
+                break;
+            case '2':
+                int dicesToReRoll[5] = {0};
+                prints("Select dice to reroll: ");
+                int i = 0;
+                while (1) {
+                    dicesToReRoll[i] = getc();
+                    printc(dicesToReRoll[i]);
+                    if (dicesToReRoll[i] == NEWLINE) {
 
-                    break;
+                        break;
+                    }
+                    i++;
                 }
-                i++;
-            }
-            for (int i = 0; i < 5; i++) {
-                switch (dicesToReRoll[i]) {
-                    case '0':
-                        break;
-                    case '1':
-                        dices[0] = diceroll();
-                        dicesone--;
-                        break;
-                    case '2':
-                        dices[1] = diceroll();
-                        break;
-                    case '3':
-                        dices[2] = diceroll();
-                        break;
-                    case '4':
-                        dices[3] = diceroll();
-                        break;
-                    case '5':
-                        dices[4] = diceroll();
-                        break;
+                for (int i = 0; i < 5; i++) {
+                    switch (dicesToReRoll[i]) {
+                        case '0':
+                            break;
+                        case '1':
+                            dices[0] = diceroll();
+                            break;
+                        case '2':
+                            dices[1] = diceroll();
+                            break;
+                        case '3':
+                            dices[2] = diceroll();
+                            break;
+                        case '4':
+                            dices[3] = diceroll();
+                            break;
+                        case '5':
+                            dices[4] = diceroll();
+                            break;
+                    }
                 }
-            }
-            goto yatzy_loop;
-            
-        } else if (c == '2') { // score
-            prints("Where do you want to score?");
-            nl();
-            char sel[10] = {0};
-            i = 0;
-            while (1) {
-                sel[i] = getc();
-                printc(sel[i]);
-                if (sel[i] == NEWLINE) {
-                    sel[i] = '\0';
-                    break;
-                }
-                i++;
-            }
-            if (m_strcmp(sel, "ones") == 0) {
-                scoreboard[0] = dicesone;
-            }
-            if (m_strcmp(sel, "twos") == 0) {
-                scoreboard[1] = dicestwo;
-            }
-            if (m_strcmp(sel, "threes") == 0) {
-                scoreboard[2] = dicesthree;
-            }
-            if (m_strcmp(sel, "fours") == 0) {
-                scoreboard[3] = dicesfour;
-            }
-            if (m_strcmp(sel, "fives") == 0) {
-                scoreboard[4] = dicesfive;
-            }
-            if (m_strcmp(sel, "sixes") == 0) {
-                scoreboard[5] = dicessix;
-            }
-
-            
-        } else if (c == '3') {
-                       prints("--Scoreboard--");
-            nl();
-            prints("Ones: ");
-            printi(scoreboard[0]);
-            nl();
-            prints("Twos: ");
-            printi(scoreboard[1]);
-            nl();
-            prints("Threes: ");
-            printi(scoreboard[2]);
-            nl();
-            prints("Fours: ");
-            printi(scoreboard[3]);
-            nl();
-            prints("Fives: ");
-            printi(scoreboard[4]);
-            nl();
-            prints("Sixes: ");
-            printi(scoreboard[5]);
-            nl();
-            prints("Sum: ");
-            for (int i = 0; i < 5; i++) {
-                scoreboard[6] = scoreboard[0] + scoreboard[1] + scoreboard[2] + scoreboard[3] + scoreboard[4] + scoreboard[5];
-            }
-            printi(scoreboard[6]);
-            nl();
-            prints("Three of a kind: ");
-            printi(scoreboard[8]);
-            nl();
-            prints("Four of a kind: ");
-            printi(scoreboard[9]);
-            nl();
-            prints("Full house: ");
-            printi(scoreboard[10]);
-            nl();
-            prints("Small straight: ");
-            printi(scoreboard[11]);
-            nl();
-            prints("Large straight: ");
-            printi(scoreboard[12]);
-            nl();
-            prints("Chance: ");
-            printi(scoreboard[13]);
-            nl();
-            prints("Yahtzee: ");
-            printi(scoreboard[14]);
-            nl();
-            prints("Total: ");
-            printi(scoreboard[15]);
-            nl();
-            prints("--------------");
-            nl();
-            prints("Press any key to continue");
-            getch();
+                goto dice_loop;
+            case '3':
+                return;
+            default:
+                goto dice_loop;
         }
     }
-
 }
-
 void main(void) {
     char *prompt;
     int i = 0;
@@ -364,7 +216,7 @@ void main(void) {
             printc(prompt[i]);
             if (prompt[i] == NEWLINE) {
                 prompt[i] = '\0';
-                nl();
+                nl(); 
                 break;
             }
             if (prompt[i] == 0x08) {
@@ -384,10 +236,8 @@ void main(void) {
             nl();
         } else if (m_strcmp(prompt, "wpp") == 0) {
             wpp_interpreter();
-        } else if (m_strcmp(prompt, "yatzy") == 0) {
-            yatzy();
-        } else if (m_strcmp(prompt, "y") == 0) {
-            yatzy();
+        } else if (m_strcmp(prompt, "dice") == 0) {
+            rdice();
         }
     }
 }
