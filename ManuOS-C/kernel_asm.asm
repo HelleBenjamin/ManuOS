@@ -244,7 +244,8 @@ wpp_interpreter:
             jne .interpret
             ;mov al, '1'
             ;call printchr
-            mov di, cx
+            pop ax
+            mov di, [cx + ax]
             jmp .interpret
         .if_halt:
             jmp .end_interpreter
