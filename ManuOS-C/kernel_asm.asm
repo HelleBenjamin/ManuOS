@@ -59,7 +59,7 @@ print_str: ; Parameters: bx = pointer to string Returns: none
     .end_print_str:
         ret
 
-; Wuf++ - Brainfuck like code interpreter
+; Wuf++ - Low-level language
 ; Registers that are used:
 ; bl - main register
 ; cx - pointer, not the program counter

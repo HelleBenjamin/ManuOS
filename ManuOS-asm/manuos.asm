@@ -126,7 +126,7 @@ check_txt_functions:
         call print_chr
         .no_backspace:
             ret
-; Wuf++ - Brainfuck like code interpreter
+; Wuf++ - Low-level language
 ; Registers that are used:
 ; bl - main register
 ; cx - pointer, not the program counter
@@ -155,22 +155,24 @@ check_txt_functions:
 ; \ - sub bx and cx, bx = bx - cx
 ; @ - load zero to bx, bx = 0
 ; ^ - swap bl with bh, bh <-> bl
+global wpp_interpreter
 wpp_interpreter:
     .init_interpreter:
-        call clrscr
+        call cls
         mov bx, wppmsg
         call print_str
-        call newline
+        call nl
         mov di, wpp_buffer
         mov ecx, 0x100 ; Length of wpp_buffer
-        rep stosb
+        rep stosb 
         mov cx, 0x0000 ; Pointer
         mov bx, 0x0000 ; Main register
+        mov dx, 0x0000 ; Temp register
     .interpreter_loop:
-        call read
+        call getchar
         mov [di], al
         inc di
-        call print_chr
+        call printchr
         cmp al, 0x0d
         je .handle_enter
         cmp al, 0x08
@@ -184,7 +186,15 @@ wpp_interpreter:
     .handle_enter:
         mov byte [di], 0
         mov di, wpp_buffer
-        call newline
+        call nl
+        mov si, wpp_buffer
+        .print_program:
+            mov al, [si]
+            call printchr
+            inc si
+            cmp al, 0
+            jne .print_program
+        call nl
     .interpret:
         mov al, [di]
         cmp di, 0
@@ -241,7 +251,7 @@ wpp_interpreter:
         jne .interpret
         .if_read:
             .read_loop:
-                call read
+                call getchar
                 cmp al, 0
                 je .read_loop
             mov bl, al
@@ -260,7 +270,7 @@ wpp_interpreter:
             jmp .interpret
         .if_print:
             mov al, bl
-            call print_chr
+            call printchr
             jmp .interpret
         .if_jump:
             mov di, cx
@@ -282,7 +292,7 @@ wpp_interpreter:
             jmp .interpret
         .if_print_pointer:
             mov al, cl
-            call print_chr
+            call printchr
             jmp .interpret
         .if_load_char:
             mov bl, [di]
@@ -290,6 +300,7 @@ wpp_interpreter:
             jmp .interpret
         .if_loop_start:
             mov dx, di
+            ;dec cx
             jmp .interpret
         .if_loop_end:
             dec cx
@@ -301,11 +312,11 @@ wpp_interpreter:
             xchg bl, cl
             jmp .interpret
         .if_compare:
-            mov ah, [di]
+            mov dl, [di]
             inc di
-            cmp bl, ah
+            cmp bl, dl
             jne .interpret
-            mov di, cx
+            lea di, [ecx + wpp_buffer]
             jmp .interpret
         .if_halt:
             jmp .end_interpreter
@@ -322,12 +333,12 @@ wpp_interpreter:
             xchg bh, bl
             jmp .interpret
     .end_interpreter:
-        call newline
+        call nl
         mov bx, fmsg
         call print_str
         .l1:
-            call read
+            call getchar
             cmp al, 0x0d
             jne .l1
-        call clrscr
-        jmp terminal
+        call cls
+        ret
