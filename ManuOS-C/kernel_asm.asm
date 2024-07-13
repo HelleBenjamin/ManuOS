@@ -100,6 +100,7 @@ wpp_interpreter:
         rep stosb 
         mov cx, 0x0000 ; Pointer
         mov bx, 0x0000 ; Main register
+        mov dx, 0x0000 ; Temp register
     .interpreter_loop:
         call getchar
         mov [di], al
