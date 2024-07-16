@@ -96,11 +96,11 @@ string dectohex(int num) {
     return ss.str();
 }
 
-void interpret(char *InterpretedProgram) {
-    int pg_size = string(InterpretedProgram).length();
-    for (int pc = 0; pc < pg_size; pc++) {
+void interpret(string InterpretedProgram) {
+    pc = 0;
+    while (pc < InterpretedProgram.length()) {
         if(halt) break;
-        switch (program[pc]) {
+        switch (InterpretedProgram[pc]) {
             case '\n':
                 break;
             case ' ':
@@ -129,7 +129,7 @@ void interpret(char *InterpretedProgram) {
                 cout << char(bx);
                 break;
             case ',':
-                cin >> bx;
+                bx = cin.get();
                 break;
             case '&':
                 pc = cx;
@@ -153,7 +153,7 @@ void interpret(char *InterpretedProgram) {
                 cout << dectohex(cx) << endl;
                 break;
             case '#':
-                bx = program[pc+1];
+                bx = InterpretedProgram[pc+1];
                 pc++;
                 break;
             case '(': 
@@ -175,7 +175,7 @@ void interpret(char *InterpretedProgram) {
                 break;
             case '%':
                 pc++;
-                if (bx == program[pc]) {
+                if (bx == InterpretedProgram[pc]) {
                     pc = cx -1;
                     break;
                 }
@@ -198,19 +198,24 @@ void interpret(char *InterpretedProgram) {
                 bx = (dx & 0xFF00) >> 8;
                 break;
             default:
-                cout << "Error: Unknown command: '" << program[pc] << "' at position: " << pc << "" << endl;
+                cout << "Error: Unknown command: '" << InterpretedProgram[pc] << "' at position: " << pc << "" << endl;
                 break;
         }
+        pc++;
     }
 }
 
 void interpret_without_file() {
-    char programI[1000];
-    int i = 0;
     cout << "--Wuf++ interpreter--" << endl;
+    int i = 0;
+    char programI[0xff] = {0};
     loop:
-    cout << "> ";
+    for (i = 0; i < 0xff; i++) programI[i] = 0;
     i = 0;
+    bx, cx, dx = 0;
+    sp = 1000;
+    halt = false;
+    cout << "> ";
     while(1) {
         cin.get(programI[i]);
         if (programI[i] == '\n') break;
@@ -218,6 +223,7 @@ void interpret_without_file() {
     }
     programI[i] = '=';
     interpret(programI);
+    cout << '\n';
     goto loop;
 }
 
