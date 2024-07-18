@@ -15,5 +15,10 @@ ld -m elf_i386 -T link.ld -o kernel.bin kernel_asm.o kernel.o --oformat binary -
 # Combine the bootloader and the kernel into a single binary
 cat boot.bin kernel.bin > os-image.bin
 
-# Run the OS image in QEMU
+# Run the OS image in QEMU, you can remove this if you want
 qemu-system-i386 -fda os-image.bin
+
+# Todo:
+# - Cleanup
+# - Windows bat version
+# - Consider using makefile

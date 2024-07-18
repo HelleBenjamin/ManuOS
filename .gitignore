@@ -1,0 +1,5 @@
+ManuOS-C/boot.bin
+ManuOS-C/kernel_asm.o
+ManuOS-C/kernel.bin
+ManuOS-C/kernel.o
+ManuOS-C/os-image.bin
