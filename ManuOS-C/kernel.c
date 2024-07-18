@@ -95,7 +95,7 @@ unsigned long a = 1664525;
 unsigned long c = 1013904223;
 unsigned long m = 4294967290;
 
-unsigned long seed; // Seed value
+unsigned long seed;
 
 void initialize_seed(unsigned long initial_seed) {
     seed = initial_seed;
@@ -109,8 +109,6 @@ unsigned long lcg() {
 
 unsigned long get_bios_time() {
     unsigned long time = 0;
-
-    // BIOS interrupt 1Ah, function 00h to get the current clock count
     __asm__ __volatile__ (
         "int $0x1A"
         : "=c" (((unsigned char *)&time)[1]),

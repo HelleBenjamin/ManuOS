@@ -163,7 +163,7 @@ wpp_interpreter:
         call print_str
         call nl
         mov di, wpp_buffer
-        mov ecx, 0x100 ; Length of wpp_buffer
+        mov ecx, 0x100
         rep stosb 
         mov cx, 0x0000 ; Pointer
         mov bx, 0x0000 ; Main register
@@ -186,6 +186,8 @@ wpp_interpreter:
     .handle_enter:
         mov byte [di], 0
         mov di, wpp_buffer
+        call nl
+        mov si, wpp_buffer
         call nl
     .interpret:
         mov al, [di]
