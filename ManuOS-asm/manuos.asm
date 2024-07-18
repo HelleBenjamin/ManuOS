@@ -16,7 +16,7 @@ section .bss
 
 section .text
     global main
-    extern read
+    extern read 
     extern print_chr
     extern print_str
     extern newline
@@ -45,7 +45,7 @@ terminal:
     mov byte [di], 0 ; Null-terminate the command
     call handle_commands
     jmp terminal
-    .terminal_handle_backspace:
+    .terminal_handle_backspace: ; Handle backspace
         dec di
         dec di
         mov byte [di], 0
@@ -74,6 +74,7 @@ handle_commands:
     call newline
     ret
 
+    ;Handle commands
     .manu_command:
         call newline
         mov bx, manumsg

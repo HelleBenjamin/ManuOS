@@ -1,5 +1,5 @@
 BITS 16
-ORG 0x7C00
+ORG 0x7C00 ; Don't modify this, necessary for the bootloader
 
 start:
     ; Setup segment registers
@@ -29,11 +29,11 @@ start:
     pop ax
     jmp 0x0000:0x8000
 
-disk_error:
+disk_error: ;Error
     mov al, 'E'
     mov ah, 0x0e
     int 0x10
     hlt
 
-times 510 - ($ - $$) db 0
+times 510 - ($ - $$) db 0 ; Don't remove this, necessary for the bootloader
 dw 0xAA55
