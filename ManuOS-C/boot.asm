@@ -2,6 +2,7 @@ BITS 16
 ORG 0x7C00 ; Don't modify this, necessary for the bootloader
 
 start:
+    extern kernel_main
     ; Setup segment registers
     xor ax, ax
     mov ds, ax
@@ -11,7 +12,7 @@ start:
 
     ; Load the kernel from disk
     mov ah, 0x02
-    mov al, 16
+    mov al, 20
     mov ch, 0
     mov cl, 2
     mov dh, 0

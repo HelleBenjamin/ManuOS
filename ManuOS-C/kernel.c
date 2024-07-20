@@ -1,18 +1,39 @@
+#include "kernel.h"
 
-#define NEWLINE 0x0d
-#define VERSION "ManuOS 0.0.1-alpha, Puppy-kernel 0.0.1, C-edition"
-#define HELP_MSG "Commands: version, help, wpp, dices"
+extern void os_main(); // defined in manuos.c
 
-extern void getchar();
-extern void nl();
-extern void cls();
-extern void wpp_interpreter();
+/** Kernel functions and syscalls ***/
 
+void nl() { // new line
+    asm(
+        "mov $0x0a, %al\n\t"
+        "call printchr\n\t"
+        "mov $0x0d, %al\n\t"
+        "call printchr\n\t"
+        "mov $0x0d, %al\n\t"
+        "call printchr\n\t"
+    );
+}
 
-void sleepms(int ms) {
-    int i = 0;
-    while (i < ms) {
-        i++;
+asm(
+    "printchr: \n\t"
+    "   mov $0x0e, %ah\n\t"
+    "   int $0x10\n\t"
+    "   ret\n\t"
+);
+void cls() { // clear screen
+    asm(
+        "mov $0x00, %ah\n\t"
+        "mov $0x03, %al\n\t"
+        "int $0x10\n\t"
+    );
+}
+void sleepms(unsigned long ms) { // sleep milliseconds
+    unsigned long startTime = get_bios_time();
+    unsigned long endTime = startTime + ms * 10 / 1000;
+
+    while (get_bios_time() < endTime) {
+        // nop
     }
 }
 char numToAscii(int num) {
@@ -65,12 +86,16 @@ void kernel_panic(char *msg) {
 
 char getc() {
     char c = 0;
-    getchar();
     asm(
-        "nop"
+        "mov $0x0, %ah\n\t"
+        "int $0x16\n\t"
+    );
+    asm(
+        "nop\n\t"
         : "=al"(c)
         :
     );
+    return c;
 }
 
 char getch() {
@@ -81,14 +106,35 @@ char getch() {
             break;
         }
     }
+    return c;
 }
 
-short m_strcmp(char *str1, char *str2) {
-    while (*str1 && (*str1 == *str2)) {
-        str1++;
-        str2++;
+int geti() {
+    char c = 0;
+    int i = 0;
+    while (1) {
+        c = getc();
+        printc(c);
+        if (c >= '0' && c <= '9') {
+            i = i * 10 + (c - '0');
+        } else if (c == '-') {
+            i *= -1;
+        } else {
+            break;
+        }
     }
-    return *(unsigned char *)str1 - *(unsigned char *)str2;
+    return i;
+}
+
+int getih() {
+    int i = 0;
+    while (1) {
+        i = geti();
+        if (i != 0) {
+            break;
+        }
+    }
+    return i;
 }
 
 unsigned long a = 1664525;
@@ -126,135 +172,7 @@ unsigned long random(unsigned long min, unsigned long max) {
     return min + random_value;
 }
 
-void manu() {
-    prints("Manu");
-    nl();
-    char manu[28][28] = {
-        ",,,__,,,,,,",
-        ",,/         "
-    };
-
-    for (int i = 0; i < 28; i++) {
-        prints(manu[i]);
-        nl();
-    }
-}
-
-int diceroll() {
-    return random(1, 6);
-}
-void rdice(){
-    int dices[5] = {1};
-    int initial_seed;
-    int dicesToReRoll[5] = {0};
-    for (int i = 0; i < 5; i++) {
-            dices[i] = diceroll();
-    }
-    while(1){
-        dice_loop:
-        initial_seed = get_bios_time();
-        initialize_seed(initial_seed);
-        prints("Your dices are: ");
-        for (int i = 0; i < 5; i++) {
-            printc('[');
-            printi(dices[i]);
-            printc(']');
-            printc(' ');
-        }
-        nl();
-        prints("1 - reroll all");
-        nl();
-        prints("2 - reroll selected");
-        nl();
-        prints("3 - exit");
-        nl();
-        char c = getch();
-        switch (c){
-            case '1':
-                for (int i = 0; i < 5; i++) {
-                    dices[i] = diceroll();
-                }
-                break;
-            case '2':
-                prints("Select dices to reroll: ");
-                int i = 0;
-                while (1) {
-                    dicesToReRoll[i] = getc();
-                    printc(dicesToReRoll[i]);
-                    if (dicesToReRoll[i] == NEWLINE) {
-
-                        break;
-                    }
-                    i++;
-                }
-                for (int i = 0; i < 5; i++) {
-                    switch (dicesToReRoll[i]) {
-                        case '0':
-                            break;
-                        case '1':
-                            dices[0] = diceroll();
-                            break;
-                        case '2':
-                            dices[1] = diceroll();
-                            break;
-                        case '3':
-                            dices[2] = diceroll();
-                            break;
-                        case '4':
-                            dices[3] = diceroll();
-                            break;
-                        case '5':
-                            dices[4] = diceroll();
-                            break;
-                    }
-                }
-                goto dice_loop;
-            case '3':
-                return;
-            default:
-                goto dice_loop;
-        }
-    }
-}
-void main(void) {
-    char *prompt;
-    int i = 0;
-    prints("Welcome to ManuOS");
-    nl();
-    while (1){
-        printc('>');
-        i = 0;
-        while (1) {
-            prompt[i] = getc();
-            printc(prompt[i]);
-            if (prompt[i] == NEWLINE) {
-                prompt[i] = '\0';
-                nl(); 
-                break;
-            }
-            if (prompt[i] == 0x08) {
-                i--;
-                printc(' ');
-                printc(0x08);
-                prompt[i] = '\0';
-            }
-            i++;
-        }
-
-        if (m_strcmp(prompt, "version") == 0) {
-            prints("ManuOS " VERSION);
-            nl();
-        } else if (m_strcmp(prompt, "help") == 0) {
-            prints(HELP_MSG);
-            nl();
-        } else if (m_strcmp(prompt, "wpp") == 0) {
-            wpp_interpreter();
-        } else if (m_strcmp(prompt, "dices") == 0) {
-            rdice();
-        } else if (m_strcmp(prompt, "cls") == 0) {
-            cls();
-        } else if (m_strcmp(prompt, "manu") == 0) {
-            manu();
-        }
-    }
+void kernel_main(void) {
+    // Add here functions that should be called at the start of the kernel
+    os_main(); // Don't remove this line
 }

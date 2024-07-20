@@ -3,3 +3,6 @@ ManuOS-C/kernel_asm.o
 ManuOS-C/kernel.bin
 ManuOS-C/kernel.o
 ManuOS-C/os-image.bin
+ManuOS-C/manuos.o
+ManuOS-C/floppy.img
+ManuOS-C/osfloppy.img
