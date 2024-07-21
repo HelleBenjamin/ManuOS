@@ -1,3 +1,4 @@
+![Terminal](https://github.com/Pepe-57/ManuOS/blob/main/manuos1.png)
 # ManuOS
 ManuOS is a hobby os written in C and X86 assembly. Its main goal is to be simple and easy to use. It currently supports only X86 architecture. Arm support is planned in the future. 
 ## Features
