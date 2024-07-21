@@ -37,9 +37,7 @@ void terminal() {
     clt();
     char *prompt;
     int i = 0;
-    nl();
-    prints("Welcome to ");
-    prints(OS_VERSION);
+    prints("Welcome to ManuOS");
     nl();
     while (1){
         printc('>');
@@ -118,13 +116,20 @@ void dices(){
             printc(' ');
         }
         nl();
+        update_taskbar();
+        prints("Select an action: ");
+        nl();
+        update_taskbar();
         prints("1 - reroll all");
         nl();
+        update_taskbar();
         prints("2 - reroll selected");
         nl();
+        update_taskbar();
         prints("3 - exit");
-        nl();
+        update_taskbar();
         char c = getch();
+        nl();
         switch (c){
             case '1':
                 for (int i = 0; i < 5; i++) {
@@ -190,7 +195,10 @@ void wpp_interpreter() {
     while(1) {
         InterpretedProgram[i] = getch();
         printc(InterpretedProgram[i]);
-        if (InterpretedProgram[i] == NEWLINE) break;
+        if (InterpretedProgram[i] == NEWLINE){
+            update_taskbar(); 
+            break;
+        } 
         if (InterpretedProgram[i] == 0x08) {
             i--;
             printc(' ');
@@ -332,22 +340,25 @@ void wpp_interpreter() {
 void calculator() {
     m_strcpy(cProgram, "Calculator");
     clrs();
-    nl();
     int a, b, c, sum;
     cloop:
     prints("Operations: 1.ADD 2.SUBTRACT 3.MULTIPLY 4.DIVIDE 5.EXIT ");
+    update_taskbar();
     c = geti();
     if (c == 5){
         clt();
         return;
     }
     nl();
+    update_taskbar();
     prints("Enter first number: ");
     a = geti();
     nl();
+    update_taskbar();
     prints("Enter second number: ");
     b = geti();
     nl();
+    update_taskbar();
     switch(c) {
         case 1:
             sum = a + b;
@@ -412,7 +423,7 @@ void clt(){ //clear screen for terminal, use for when exiting to terminal
     clrs();
 }
 
-void taskbar() {
+void taskbar() { //simple taskbar, not required in custom programs
     char tskbr[80] = {0};
     m_strcat(tskbr, cProgram);	
     m_strcat(tskbr, " | ");
