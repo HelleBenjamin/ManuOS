@@ -17,7 +17,8 @@ void terminal() {
     char *prompt;
     int i = 0;
     nl();
-    prints("Welcome to ManuOS");
+    prints("Welcome to ");
+    prints(OS_VERSION);
     nl();
     while (1){
         printc('>');
@@ -41,6 +42,8 @@ void terminal() {
         }
 
         if (m_strcmp(prompt, "version") == 0) {
+            prints("Copyright (C) 2024 Benjamin H. All rights reserved.");
+            nl();
             prints("OS: " OS_VERSION);
             nl();
             prints("KERNEL: " KERNEL_VERSION);
