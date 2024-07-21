@@ -31,7 +31,7 @@ ManuOS is a hobby os written in C and X86 assembly. Its main goal is to be simpl
 
 
 ## Wuf++ language
-ManuOS comes with a Wuf++ interpreter. You can find it [here](https://github.com/Pepe-57/wpp). 
+ManuOS comes with a Wuf++ interpreter. See more on [here](https://github.com/Pepe-57/wpp). 
 ### Registers:
 - **bx** - main register, bl mainly used
 - **cx** - main pointer
