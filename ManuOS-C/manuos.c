@@ -3,7 +3,7 @@
 
 
 unsigned int cRow = 0;
-char cProgram[15];
+char cProgram[20];
 
 void os_main() {
     terminal();
@@ -76,15 +76,9 @@ void terminal() {
         } else if (m_strcmp(prompt, "dices") == 0) {
             dices();
         } else if (m_strcmp(prompt, "clear") == 0) {
-            cls();
+            clt();
         } else if (m_strcmp(prompt, "calculator") == 0 || m_strcmp(prompt, "calc") == 0) {
             calculator();
-        } else if (m_strcmp(prompt, "color") == 0) {
-            for (int i = 0; i < 80; i++) {
-                for (int j = 0; j < 25; j++) {
-                    WriteGpixel(i, i, j);
-                }
-            }
         } else if (m_strcmp(prompt, "ball") == 0) {
             bouncing_ball();
         }
