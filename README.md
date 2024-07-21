@@ -9,7 +9,7 @@ ManuOS is a hobby os written in C and X86 assembly. Its main goal is to be simpl
 - OS uses kernel syscalls to interact with the hardware
 - Kernel can be customized for different architectures
 ## Programs
-### C-edition
+### C-edition, recommended
 - Wuf++ interpreter
 - Dices
 - Calculator
