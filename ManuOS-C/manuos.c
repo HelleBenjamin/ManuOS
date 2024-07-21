@@ -1,6 +1,10 @@
 #include "kernel.h"
 #include "manuos.h"
 
+
+unsigned int cRow = 0;
+char cProgram[15];
+
 void os_main() {
     terminal();
 }
@@ -13,7 +17,24 @@ short m_strcmp(char *str1, char *str2) { // string compare
     return *(unsigned char *)str1 - *(unsigned char *)str2;
 }
 
+void m_strcpy(char *dest, char *src) {
+    while (*src) {
+        *dest = *src;
+        dest++;
+        src++;
+    }
+    *dest = '\0';
+}
+
+void m_strcat(char *dest, char *src) {
+    while (*dest) {
+        dest++;
+    }
+    m_strcpy(dest, src);
+}
+
 void terminal() {
+    clt();
     char *prompt;
     int i = 0;
     nl();
@@ -22,6 +43,7 @@ void terminal() {
     nl();
     while (1){
         printc('>');
+        update_taskbar();
         i = 0;
         while (1) {
             prompt[i] = getc();
@@ -59,6 +81,14 @@ void terminal() {
             cls();
         } else if (m_strcmp(prompt, "calculator") == 0 || m_strcmp(prompt, "calc") == 0) {
             calculator();
+        } else if (m_strcmp(prompt, "color") == 0) {
+            for (int i = 0; i < 80; i++) {
+                for (int j = 0; j < 25; j++) {
+                    WriteGpixel(i, i, j);
+                }
+            }
+        } else if (m_strcmp(prompt, "ball") == 0) {
+            bouncing_ball();
         }
     }
 }
@@ -67,6 +97,8 @@ int diceroll() {
     return random(1, 6);
 }
 void dices(){
+    m_strcpy(cProgram, "Dices");
+    clrs();
     int dices[5] = {1};
     int initial_seed;
     int dicesToReRoll[5] = {0};
@@ -75,6 +107,7 @@ void dices(){
     }
     while(1){
         dice_loop:
+        update_taskbar();
         initial_seed = get_bios_time();
         initialize_seed(initial_seed);
         prints("Your dices are: ");
@@ -105,7 +138,6 @@ void dices(){
                     dicesToReRoll[i] = getc();
                     printc(dicesToReRoll[i]);
                     if (dicesToReRoll[i] == NEWLINE) {
-
                         break;
                     }
                     i++;
@@ -133,6 +165,7 @@ void dices(){
                 }
                 goto dice_loop;
             case '3':
+                clt();
                 return;
             default:
                 goto dice_loop;
@@ -141,9 +174,8 @@ void dices(){
 }
 
 void wpp_interpreter() {
-    cls();
-    prints("--Wuf++ interpreter--");
-    nl();
+    m_strcpy(cProgram, "Wuf++ Interpreter");
+    clrs();
     prints("Press ESC to exit, enter to execute");
     nl();
     int i = 0;
@@ -167,7 +199,7 @@ void wpp_interpreter() {
             i--;
         }
         if (InterpretedProgram[i] == ESC) {
-            cls();
+            clt();
             return;
         };
         i++;
@@ -293,19 +325,20 @@ void wpp_interpreter() {
         pc++;
     }
     nl();
+    update_taskbar();
     goto loop;
 }
 
 void calculator() {
-    cls();
-    prints("--Calculator--");
+    m_strcpy(cProgram, "Calculator");
+    clrs();
     nl();
     int a, b, c, sum;
     cloop:
     prints("Operations: 1.ADD 2.SUBTRACT 3.MULTIPLY 4.DIVIDE 5.EXIT ");
     c = geti();
     if (c == 5){
-        cls();
+        clt();
         return;
     }
     nl();
@@ -328,13 +361,77 @@ void calculator() {
         case 4:
             sum = a / b;
             break;
-        case 5:
-            terminal();
         default:
             goto cloop;
     }
     prints("Result: ");
     printi(sum);
     nl();
+    update_taskbar();
     goto cloop;
+}
+
+void bouncing_ball(){
+    cls();
+    int x = 0, y = 1;
+    int dx = 1, dy = 1;
+    int ballX = 0, ballY = 0;
+    int color = 0xf;
+    while (1) {
+        sleepms(100);
+        if(ifESC()) {
+            clt();
+            return;
+        }
+        if (ballX < 0 || ballX > 79) {
+            dx *= -1;
+        }
+        if (ballY < 0 || ballY > 24) {
+            dy *= -1;
+        }
+        if (color > 0xf) {
+            color = 1;
+        }
+        ballX += dx;
+        ballY += dy;
+        WriteGpixel(0xf, ballX, ballY);
+        WriteGpixel(0, x, y);
+        x = ballX;
+        y = ballY;
+        color++;
+    }
+}
+
+void clrs() { //clear screen and update taskbar
+    cls();
+    init_taskbar();
+}
+
+void clt(){ //clear screen for terminal, use for when exiting to terminal
+    m_strcpy(cProgram, "Terminal");
+    clrs();
+}
+
+void taskbar() {
+    char tskbr[80] = {0};
+    m_strcat(tskbr, cProgram);	
+    m_strcat(tskbr, " | ");
+    m_strcat(tskbr, OS_VERSION);
+    int i = 0;
+    for (int i = 0; i < 80; i++) {
+        WriteCharacter(tskbr[i], 0xf, 0x1, i, 0);
+    }
+}
+
+void update_taskbar() {
+    cRow++;
+    if (cRow > 23) {
+        taskbar();
+    }
+}
+
+void init_taskbar() {
+    cRow = 0;
+    taskbar();
+    nl();
 }

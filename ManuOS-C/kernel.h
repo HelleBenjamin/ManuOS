@@ -7,7 +7,7 @@
 #define SPACE 0x20
 #define DEL 0x7f
 #define ESC 0x1b
-#define KERNEL_VERSION "Puppy-kernel 0.0.2c"
+#define KERNEL_VERSION "Puppy-kernel 0.0.3c"
 
 void kernel_main();
 void sleepms(unsigned long ms);
@@ -26,5 +26,8 @@ unsigned long get_bios_time();
 unsigned long random(unsigned long min, unsigned long max);
 void initialize_seed(unsigned long initial_seed);
 unsigned long lcg();
+void WriteCharacter(unsigned char c, unsigned char forecolour, unsigned char backcolour, int x, int y);
+void WriteGpixel(unsigned char backcolour, int x, int y);
+short ifESC();
 
 #endif

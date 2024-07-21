@@ -30,12 +30,9 @@ void cls() { // clear screen
     );
 }
 void sleepms(unsigned long ms) { // sleep milliseconds
-    unsigned long startTime = get_bios_time();
-    unsigned long endTime = startTime + ms * 10 / 1000;
-
-    while (get_bios_time() < endTime) {
-        // nop
-    }
+   for (unsigned long i = 0; i < ms * 2000; i++) {
+       asm("nop\n\t");
+   }
 }
 char numToAscii(int num) {
     return '0' + num;
@@ -88,17 +85,27 @@ void kernel_panic(char *msg) {
 char getc() {
     char c = 0;
     asm(
-        "mov $0x0, %ah\n\t"
+        "mov $0x00, %%ah\n\t"
         "int $0x16\n\t"
-    );
-    asm(
-        "nop\n\t"
         : "=al"(c)
         :
     );
     return c;
 }
 
+short ifESC() {
+    char c;
+        asm(
+        "mov $0x01, %%ah\n\t"
+        "int $0x16\n\t"
+        : "=al"(c)
+        :
+    );
+    if (c == 0x1b) {
+        return 1;
+    }
+    return 0;
+}
 char getch() {
     char c = 0;
     while (1) {
@@ -171,6 +178,17 @@ unsigned long random(unsigned long min, unsigned long max) {
     unsigned long range = max - min + 1;
     unsigned long random_value = lcg() % range;
     return min + random_value;
+}
+
+void WriteCharacter(unsigned char c, unsigned char forecolour, unsigned char backcolour, int x, int y){
+    short attrib = (backcolour << 4) | (forecolour & 0x0F);
+    volatile short * where;
+    where = (volatile short *)0xB8000 + (y * 80 + x) ;
+    *where = c | (attrib << 8);
+}
+
+void WriteGpixel(unsigned char backcolour, int x, int y){
+    WriteCharacter(' ', 0xf, backcolour, x, y);
 }
 
 void kernel_main(void) {
