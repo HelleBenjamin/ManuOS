@@ -175,7 +175,7 @@ void dices(){
 void wpp_interpreter() {
     m_strcpy(cProgram, "Wuf++ Interpreter");
     clrs();
-    prints("Press ESC to exit, enter to execute");
+    prints("Press ESC to exit, enter to execute the code");
     nl();
     int i = 0;
     int halt, pc = 0;

@@ -1,7 +1,7 @@
 #ifndef MANUOS_H
 #define MANUOS_H
 
-#define OS_VERSION "ManuOS 0.0.3c-developer preview"
+#define OS_VERSION "ManuOS 0.0.3c-dev preview 1" 
 #define TERMINAL_HELP_MSG "Commands: version, help, wpp, dices, clear, calculator, ball"
 
 void os_main();

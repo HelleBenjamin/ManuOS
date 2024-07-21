@@ -13,6 +13,7 @@ ManuOS is a hobby os written in C and X86 assembly. Its main goal is to be simpl
 - Wuf++ interpreter
 - Dices
 - Calculator
+- Bouncing ball
 ### Asm-edition
 - Wuf++ interpreter
 - Text editor
@@ -63,6 +64,11 @@ ManuOS comes with a Wuf++ interpreter. You can find it [here](https://github.com
 - **^** - swap bl with bh, *bx = bh, bh = bl*
 
 # Changelog
+### ManuOS 0.0.3c-dev preview 1
+- Added simple taskbar
+- Added more kernel syscalls
+- Small changes/bugfixes
+- Added simple bouncing ball
 ### ManuOS 0.0.2c-alpha
 - Kernel and OS now in different files
 - Small changes/bugfixes
@@ -74,11 +80,13 @@ ManuOS comes with a Wuf++ interpreter. You can find it [here](https://github.com
 - Initial release
 - Kernel and OS in different files
 # Versions
-Legacy or alpha versions are not maintained. 'c' stands for C edition and 'a' for asm edition
+Legacy,alpha or devversions are not maintained. 'c' stands for C edition and 'a' for asm edition
+- v0.0.3c-dev preview 1 (latest)
 - v0.0.2c-alpha
 - v0.0.1c-alpha
-- v0.0.1a-alpha
+- v0.0.1a-alpha (latest, asm-edition)
 ## Puppy Kernel
+- v0.0.3c-dev1 (latest)
 - v0.0.2c
 - v0.0.1c
-- v0.0.1a
+- v0.0.1a (latest, asm-edition)

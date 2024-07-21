@@ -7,7 +7,7 @@
 #define SPACE 0x20
 #define DEL 0x7f
 #define ESC 0x1b
-#define KERNEL_VERSION "Puppy-kernel 0.0.3c"
+#define KERNEL_VERSION "Puppy-kernel 0.0.3c-dev1"
 
 void kernel_main();
 void sleepms(unsigned long ms);
