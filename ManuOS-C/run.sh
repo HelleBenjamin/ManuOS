@@ -6,9 +6,9 @@ nasm -f bin -o boot.bin boot.asm
 
 gcc -m16 -ffreestanding -c -o kernel.o kernel.c -fno-pic -nostdlib
 gcc -m16 -ffreestanding -c -o manuos.o manuos.c -fno-pic -nostdlib
+gcc -m16 -ffreestanding -c -o m_stdlib.o m_stdlib.c -fno-pic -nostdlib
 
-
-ld -m elf_i386 -T link.ld -o kernel.bin manuos.o kernel.o --oformat binary -nostdlib
+ld -m elf_i386 -T link.ld -o kernel.bin manuos.o kernel.o m_stdlib.o --oformat binary -nostdlib
 
 cat boot.bin kernel.bin > os-image.bin
 

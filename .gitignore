@@ -6,3 +6,4 @@ ManuOS-C/os-image.bin
 ManuOS-C/manuos.o
 ManuOS-C/floppy.img
 ManuOS-C/osfloppy.img
+ManuOS-C/m_stdlib.o

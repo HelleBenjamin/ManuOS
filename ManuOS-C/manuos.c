@@ -1,36 +1,12 @@
 #include "kernel.h"
 #include "manuos.h"
-
+#include "m_stdlib.h"
 
 unsigned int cRow = 0;
 char cProgram[20];
 
 void os_main() {
     terminal();
-}
-
-short m_strcmp(char *str1, char *str2) { // string compare
-    while (*str1 && (*str1 == *str2)) {
-        str1++;
-        str2++;
-    }
-    return *(unsigned char *)str1 - *(unsigned char *)str2;
-}
-
-void m_strcpy(char *dest, char *src) {
-    while (*src) {
-        *dest = *src;
-        dest++;
-        src++;
-    }
-    *dest = '\0';
-}
-
-void m_strcat(char *dest, char *src) {
-    while (*dest) {
-        dest++;
-    }
-    m_strcpy(dest, src);
 }
 
 void terminal() {

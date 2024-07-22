@@ -8,9 +8,6 @@ void os_main();
 void terminal();
 void wpp_interpreter();
 void dices();
-short m_strcmp(char *str1, char *str2); //os included string tools
-void m_strcpy(char *dest, char *src);
-void m_strcat(char *dest, char *src);
 void calculator();
 void bouncing_ball();
 void taskbar();
