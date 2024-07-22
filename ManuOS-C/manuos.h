@@ -2,7 +2,7 @@
 #define MANUOS_H
 
 #define OS_VERSION "ManuOS 0.0.3c-dev preview 1" 
-#define TERMINAL_HELP_MSG "Commands: version, help, wpp, dices, clear, calculator, ball"
+#define TERMINAL_HELP_MSG "Commands: version, help, wpp, dices, clear, calculator, ball, echo"
 
 void os_main();
 void terminal();
