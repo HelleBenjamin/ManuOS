@@ -3,6 +3,7 @@
 #include "m_stdlib.h"
 
 unsigned int cRow = 0;
+unsigned short taskbarColor = 0x01;
 char cProgram[20];
 
 void os_main() {
@@ -57,6 +58,11 @@ void terminal() {
             calculator();
         } else if (m_strcmp(prompt, "ball") == 0) {
             bouncing_ball();
+        } else if (m_findstr(prompt, "echo") == 0) {
+            for (int i = 5; i < m_strlen(prompt); i++) {
+                printc(prompt[i]);
+            }
+            nl();
         }
     }
 }
@@ -400,7 +406,7 @@ void taskbar() { //simple taskbar, not required in custom programs
     m_strcat(tskbr, OS_VERSION);
     int i = 0;
     for (int i = 0; i < 80; i++) {
-        WriteCharacter(tskbr[i], 0xf, 0x1, i, 0);
+        WriteCharacter(tskbr[i], 0xf, taskbarColor, i, 0);
     }
 }
 

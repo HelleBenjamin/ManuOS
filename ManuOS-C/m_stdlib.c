@@ -26,3 +26,29 @@ void m_strcat(char *dest, char *src) {
     }
     m_strcpy(dest, src);
 }
+
+short m_strlen(char *str) {
+    unsigned int i = 0;
+    while (str[i]) {
+        i++;
+    }
+    return i;
+}
+
+short m_findstr(char *str1, char *str2) {
+    unsigned int i = 0;
+    unsigned int j = 0;
+    while (str1[i]) {
+        if (str1[i] == str2[j]) {
+            i++;
+            j++;
+        } else {
+            i = 0;  
+            j = 0;
+        }
+        if (str2[j] == '\0') {
+            return 0;
+        }
+    }
+    return 1;
+}
