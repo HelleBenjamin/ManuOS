@@ -81,7 +81,7 @@ ManuOS comes with a Wuf++ interpreter. See more on [here](https://github.com/Pep
 - Initial release
 - Kernel and OS in different files
 # Versions
-Legacy,alpha or devversions are not maintained. 'c' stands for C edition and 'a' for asm edition
+Legacy, alpha or dev versions are not maintained. 'c' stands for C edition and 'a' for asm edition
 - v0.0.3c-dev preview 1 (latest)
 - v0.0.2c-alpha
 - v0.0.1c-alpha
