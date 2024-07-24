@@ -65,6 +65,10 @@ ManuOS comes with a Wuf++ interpreter. See more on [here](https://github.com/Pep
 - **^** - swap bl with bh, *bx = bh, bh = bl*
 
 # Changelog
+### ManuOS 0.0.3c-dev preview 2
+- Added disk management
+- General improvements
+- Small changes/bugfixes
 ### ManuOS 0.0.3c-dev preview 1
 - Added simple taskbar
 - Added more kernel syscalls
@@ -82,7 +86,8 @@ ManuOS comes with a Wuf++ interpreter. See more on [here](https://github.com/Pep
 - Kernel and OS in different files
 # Versions
 Legacy, alpha or dev versions are not maintained. 'c' stands for C edition and 'a' for asm edition
-- v0.0.3c-dev preview 1 (latest)
+- v0.0.3c-dev preview 2 (latest)
+- v0.0.3c-dev preview 1
 - v0.0.2c-alpha
 - v0.0.1c-alpha
 - v0.0.1a-alpha (latest, asm-edition)

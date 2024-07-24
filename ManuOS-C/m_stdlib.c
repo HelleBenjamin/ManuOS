@@ -35,20 +35,14 @@ short m_strlen(char *str) {
     return i;
 }
 
-short m_findstr(char *str1, char *str2) {
-    unsigned int i = 0;
-    unsigned int j = 0;
-    while (str1[i]) {
-        if (str1[i] == str2[j]) {
-            i++;
-            j++;
-        } else {
-            i = 0;  
-            j = 0;
-        }
-        if (str2[j] == '\0') {
+short m_startsWith(char *str1, char *str2) {
+    while (*str2 != '\0') {
+        if (*str1 != *str2) {
             return 0;
         }
+        str1++;
+        str2++;
     }
     return 1;
 }
+    

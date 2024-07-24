@@ -5,7 +5,7 @@ extern void os_main(); // defined in manuos.c
 
 /** Kernel functions and syscalls ***/
 
-void nl() { // new line
+void newline() {
     asm(
         "mov $0x0a, %al\n\t"
         "call printchr\n\t"
@@ -22,6 +22,59 @@ asm(
     "   int $0x10\n\t"
     "   ret\n\t"
 );
+int disk_read(char *buffer, int sector, int num_sectors) { //Read floppy disk
+    int status;
+    int heads_per_cyl = 2;
+    int sectors_per_track = 18;
+    int cylinder = sector / (heads_per_cyl * sectors_per_track);
+    int temp = sector % (heads_per_cyl * sectors_per_track);
+    int head = temp / sectors_per_track;
+    int sec = temp % sectors_per_track + 1;
+    int ch = cylinder & 0xFF;
+    int cl = (sec & 0x3F) | ((cylinder >> 2) & 0xC0);
+
+    asm volatile (
+        "int $0x13"
+        : "=a" (status)
+        : "a" ((0x02 << 8) | num_sectors),
+          "c" ((ch << 8) | cl),
+          "d" ((head << 8) | 0x00),
+          "b" (buffer)
+        : "cc", "memory"
+    );
+    // Return 0 if successful, otherwise return error code
+    return (status & 0xFF00) == 0 ? 0 : (status >> 8);
+}
+
+
+
+int disk_write(char *buffer, int sector, int num_sectors) { //Write floppy disk
+    int status;
+    int heads_per_cyl = 2;
+    int sectors_per_track = 18;
+
+    int cylinder = sector / (heads_per_cyl * sectors_per_track);
+    int temp = sector % (heads_per_cyl * sectors_per_track);
+    int head = temp / sectors_per_track;
+    int sec = temp % sectors_per_track + 1;
+
+    int ch = cylinder & 0xFF;
+    int cl = (sec & 0x3F) | ((cylinder >> 2) & 0xC0);
+
+    asm volatile (
+        "int $0x13"
+        : "=a" (status)
+        : "a" ((0x03 << 8) | num_sectors),
+          "c" ((ch << 8) | cl),
+          "d" ((head << 8) | 0x00),
+          "b" (buffer)
+        : "cc", "memory"
+    );
+    // Return 0 if successful, otherwise return error code
+    return (status & 0xFF00) == 0 ? 0 : (status >> 8);
+}
+
+
 void cls() { // clear screen
     asm(
         "mov $0x00, %ah\n\t"
@@ -76,7 +129,7 @@ void kernel_panic(char *msg) {
     cls();
     prints("KERNEL PANIC: ");
     prints(msg);
-    nl();
+    newline();
     while (1) {
         sleepms(100);
     }
@@ -134,6 +187,27 @@ int geti() {
     return i;
 }
 
+short gets(char *s) { //retuns length
+    int i = 0;
+    while (1) {
+        s[i] = getc();
+        printc(s[i]);
+        if (s[i] == NEWLINE) {
+            s[i] = 0;
+            break;
+        }
+        if (s[i] == 0x08) {
+            i--;
+            printc(' ');
+            printc(0x08);
+            s[i] = '\0';
+            i--;
+        }
+        i++;
+    }
+    return i;
+    
+}
 int getih() {
     int i = 0;
     while (1) {
@@ -190,6 +264,20 @@ void WriteCharacter(unsigned char c, unsigned char forecolour, unsigned char bac
 void WriteGpixel(unsigned char backcolour, int x, int y){
     WriteCharacter(' ', 0xf, backcolour, x, y);
 }
+
+void restart() {
+    __asm__ __volatile__ (
+        "cli\n\t"
+        "movw $0x1234, %ax\n\t"
+        "movw %ax, %ds \n\t"
+        "movw %ax, %es \n\t"
+        "movw %ax, %fs \n\t"
+        "movw %ax, %gs \n\t"
+        "movw %ax, %ss \n\t"
+        "ljmp $0xF000, $0xE05B \n\t"
+    );
+}
+
 
 void kernel_main(void) {
     // Add here functions that should be called at the start of the kernel

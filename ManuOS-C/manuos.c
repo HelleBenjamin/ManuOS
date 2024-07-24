@@ -3,22 +3,39 @@
 #include "m_stdlib.h"
 
 unsigned int cRow = 0;
-unsigned short taskbarColor = 0x01;
-char cProgram[20];
+unsigned short taskbarColor;
+char cProgram[25];
+char OS_Sector[0x200]; // 512 bytes for os settings, starting at sector 38
+short OSS_ptr = 38;
+char username[32];
+/*OS Sector
+0x00 - Taskbar color
+0x0f- 0x2f username, 0x17 reading address
+*/
 
 void os_main() {
+    if (disk_read(OS_Sector, OSS_ptr, 1) != 0) kernel_panic("Failed to load OS settings sector");
+    taskbarColor = OS_Sector[0x00];
+    for (int i = 0; i < 32; i++) {
+        username[i] = OS_Sector[0xf + i];
+    }
     terminal();
+}
+
+void nl() {
+    newline();
+    taskbar();
 }
 
 void terminal() {
     clt();
     char *prompt;
     int i = 0;
-    prints("Welcome to ManuOS");
+    prints("Welcome to ManuOS, ");
+    prints(username);
     nl();
     while (1){
         printc('>');
-        update_taskbar();
         i = 0;
         while (1) {
             prompt[i] = getc();
@@ -58,11 +75,49 @@ void terminal() {
             calculator();
         } else if (m_strcmp(prompt, "ball") == 0) {
             bouncing_ball();
-        } else if (m_findstr(prompt, "echo") == 0) {
+        } else if (m_strcmp(prompt, "taskbar") == 0) {
+            prints("Change taskbar color: ");
+            taskbarColor = getih();
+            OS_Sector[0x00] = taskbarColor;
+            disk_write(OS_Sector, OSS_ptr, 1);
+            init_taskbar();
+        } else if (m_strcmp(prompt, "username") == 0) {
+            prints("Current username: ");
+            for (int i = 0; i < m_strlen(username); i++) {
+                printc(username[i]);
+            }
+            nl();
+            prints("Change username: ");
+            gets(username);
+            for (int i = 0; i < 32; i++) {
+                OS_Sector[0x0f + i] = username[i];
+            }
+            if (disk_write(OS_Sector, OSS_ptr, 1) != 0) prints("Failed to write sector");
+            nl();
+
+        } else if (m_strcmp(prompt, "restart") == 0) {
+            restart();
+            
+        } else if (m_startsWith(prompt, "echo ") != 0) {
             for (int i = 5; i < m_strlen(prompt); i++) {
                 printc(prompt[i]);
             }
             nl();
+        } else if (m_strcmp(prompt, "setup") == 0) {
+            prints("ManuOS Setup");
+            nl();
+            prints("Username: ");
+            gets(username);
+            for (int i = 0; i < 32; i++) {
+                OS_Sector[0x0f + i] = username[i];
+            }
+            nl();
+            disk_write(OS_Sector, OSS_ptr, 1);
+            prints("ManuOS Setup Complete");
+            nl();
+            prints("Rebootting...");
+            sleepms(1000);
+            restart();
         }
     }
 }
@@ -81,7 +136,6 @@ void dices(){
     }
     while(1){
         dice_loop:
-        update_taskbar();
         initial_seed = get_bios_time();
         initialize_seed(initial_seed);
         prints("Your dices are: ");
@@ -163,16 +217,15 @@ void wpp_interpreter() {
     int halt, pc = 0;
     unsigned int stack[0xff] = {0};
     short sp, bx, cx, dx;
-    char InterpretedProgram[0xff] = {0};
+    char InterpretedProgram[0x200] = {0};
     loop:
-    for (i = 0; i < 0xff; i++) InterpretedProgram[i] = 0;
+    for (i = 0; i < 0x200; i++) InterpretedProgram[i] = 0;
     i = 0;
     prints("> ");
     while(1) {
         InterpretedProgram[i] = getch();
         printc(InterpretedProgram[i]);
         if (InterpretedProgram[i] == NEWLINE){
-            update_taskbar(); 
             break;
         } 
         if (InterpretedProgram[i] == 0x08) {
@@ -196,6 +249,7 @@ void wpp_interpreter() {
     pc = 0;
     halt = 0;
     nl();
+    interpret:
     unsigned len = i;
     while (pc < len) {
         if(halt) break;
@@ -309,7 +363,6 @@ void wpp_interpreter() {
         pc++;
     }
     nl();
-    update_taskbar();
     goto loop;
 }
 
@@ -401,6 +454,8 @@ void clt(){ //clear screen for terminal, use for when exiting to terminal
 
 void taskbar() { //simple taskbar, not required in custom programs
     char tskbr[80] = {0};
+    m_strcpy(tskbr, username);
+    m_strcat(tskbr, " | ");
     m_strcat(tskbr, cProgram);	
     m_strcat(tskbr, " | ");
     m_strcat(tskbr, OS_VERSION);

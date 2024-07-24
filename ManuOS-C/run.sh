@@ -12,9 +12,12 @@ ld -m elf_i386 -T link.ld -o kernel.bin manuos.o kernel.o m_stdlib.o --oformat b
 
 cat boot.bin kernel.bin > os-image.bin
 
+dd if=/dev/zero of=floppy.img bs=512 count=2880
 dd if=os-image.bin of=osfloppy.img bs=512 count=2880
 
-qemu-system-i386 -fda osfloppy.img #floppy
+cat osfloppy.img floppy.img > manuos.img
+
+qemu-system-i386 -fda manuos.img #floppy
 
 # Todo:
 # - Cleanup
