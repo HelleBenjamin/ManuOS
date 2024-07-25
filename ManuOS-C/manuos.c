@@ -112,6 +112,7 @@ void terminal() {
                 OS_Sector[0x0f + i] = username[i];
             }
             nl();
+            OS_Sector[0x00] = BLUE;
             disk_write(OS_Sector, OSS_ptr, 1);
             prints("ManuOS Setup Complete");
             nl();
