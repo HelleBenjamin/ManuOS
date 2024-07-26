@@ -1,13 +1,13 @@
-![Terminal](https://github.com/Pepe-57/ManuOS/blob/main/manuos1.png)
+![Terminal](manuos1.png)
 # ManuOS
 ManuOS is a hobby os written in C and X86 assembly. Its main goal is to be simple and easy to use. It currently supports only X86 architecture. Arm support is planned in the future. 
 ## Features
 - Two editions, C and asm
+- Open source
 - C edition is written in C and asm, full version, recommended
 - Asm edition is written only in asm, minimal version
 - Currently runs in real mode, planned to run in protected mode in the future
-- Kernel and OS in different files
-- OS uses kernel syscalls to interact with the hardware
+- OS uses kernel system calls to interact with the hardware
 - Kernel can be customized for different architectures
 ## Programs
 ### C-edition, recommended
@@ -19,18 +19,34 @@ ManuOS is a hobby os written in C and X86 assembly. Its main goal is to be simpl
 - Wuf++ interpreter
 - Text editor
 
-## How to use
-### Requirements
+## Requirements
 - Linux, if you use Windows you can use Cygwin or Linux Subsystem for Windows
 - gcc
 - NASM
 - QEMU or other emulator
 
-### How to build
+## How to build
 1. Change directory to the edition you want to build, for example: ```cd ManuOS-C```
 2. Build the edition: ```./run.sh```, it should launch the QEMU after building. If you encounter a permission error, run ```chmod +x run.sh```
-3. In the OS terminal, type ```setup``` and follow the instructions
+3. In the OS terminal, type ```setup``` and follow the instructions, this needs to be done only once.
 
+## Colors
+- **Black** - 0
+- **Blue** - 1
+- **Green** - 2
+- **Cyan** - 3
+- **Red** - 4
+- **Magenta** - 5
+- **Brown** - 6
+- **Light Gray** - 7
+- **Dark Gray** - 8
+- **Light Blue** - 9
+- **Light Green** - 10
+- **Light Cyan** - 11
+- **Light Red** - 12
+- **Light Magenta** - 13
+- **Yellow** - 14
+- **White** - 15
 
 ## Wuf++ language
 ManuOS comes with a Wuf++ interpreter. See more on [here](https://github.com/Pepe-57/wpp). 
@@ -66,8 +82,11 @@ ManuOS comes with a Wuf++ interpreter. See more on [here](https://github.com/Pep
 - **^** - swap bl with bh, *bx = bh, bh = bl*
 
 # Changelog
+### ManuOS 0.0.3c-release
+- Stable release
+- Small changes/bugfixes
 ### ManuOS 0.0.3c-dev preview 2
-- Added disk management
+- Added disk management to the kernel
 - General improvements
 - Small changes/bugfixes
 ### ManuOS 0.0.3c-dev preview 1
@@ -87,13 +106,16 @@ ManuOS comes with a Wuf++ interpreter. See more on [here](https://github.com/Pep
 - Kernel and OS in different files
 # Versions
 Legacy, alpha or dev versions are not maintained. 'c' stands for C edition and 'a' for asm edition
-- v0.0.3c-dev preview 2 (latest)
+- v0.0.3c-release (latest)
+- v0.0.3c-dev preview 2
 - v0.0.3c-dev preview 1
 - v0.0.2c-alpha
 - v0.0.1c-alpha
 - v0.0.1a-alpha (latest, asm-edition)
 ## Puppy Kernel
-- v0.0.3c-dev1 (latest)
+- v0.0.3c-release (latest)
+- v0.0.3c-dev2
+- v0.0.3c-dev1
 - v0.0.2c
 - v0.0.1c
 - v0.0.1a (latest, asm-edition)

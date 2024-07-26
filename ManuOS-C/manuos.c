@@ -3,7 +3,7 @@
 #include "m_stdlib.h"
 
 unsigned int cRow = 0;
-unsigned short taskbarColor;
+uint8_t taskbarColor;
 char cProgram[25];
 char OS_Sector[0x200]; // 512 bytes for os settings, starting at sector 38
 short OSS_ptr = 38;
@@ -81,6 +81,9 @@ void terminal() {
             OS_Sector[0x00] = taskbarColor;
             disk_write(OS_Sector, OSS_ptr, 1);
             init_taskbar();
+        } else if (m_strcmp(prompt, "color") == 0) {
+            prints("Colors: 0 - Black, 1 - Blue 2 - Green, 3 - Cyan, 4 - Red, 5 - Magenta, 6 - Brown, 7 - Light Gray, 8 - Dark Gray, 9 - Light Blue, 10 - Light Green, 11 - Light Cyan, 12 - Light Red, 13 - Light Magenta, 14 - Yellow, 15 - White");
+            nl();
         } else if (m_strcmp(prompt, "username") == 0) {
             prints("Current username: ");
             for (int i = 0; i < m_strlen(username); i++) {
@@ -98,7 +101,7 @@ void terminal() {
         } else if (m_strcmp(prompt, "restart") == 0) {
             restart();
             
-        } else if (m_startsWith(prompt, "echo ") != 0) {
+        } else if (m_startsWith(prompt, "echo ") == 0) {
             for (int i = 5; i < m_strlen(prompt); i++) {
                 printc(prompt[i]);
             }
@@ -116,8 +119,8 @@ void terminal() {
             disk_write(OS_Sector, OSS_ptr, 1);
             prints("ManuOS Setup Complete");
             nl();
-            prints("Rebootting...");
-            sleepms(1000);
+            prints("Rebooting...");
+            sleepms(500);
             restart();
         }
     }
