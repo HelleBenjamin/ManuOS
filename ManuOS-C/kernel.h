@@ -36,20 +36,5 @@ short ifESC();
 int disk_read(char *buffer, int sector, int num_sectors);
 int disk_write(char *buffer, int sector, int num_sectors);
 void restart();
-int fs_create(const char *filename, const char *extension, const char *directory, uint32_t size);
-int fs_read(const char *filename, const char *extension, char *buffer, uint32_t size);
-int fs_write(const char *filename, const char *extension, const char *content, uint32_t size);
-void fs_initialize();
-void fs_list();
-void fs_dir();
-int fs_mkdir(const char* name);
-int fs_chdir(const char* name);
-int fs_delete(const char* filename, const char* extension);
-char* getCurrentDir();
-int save_file_system();
-int load_file_system();
-int fs_save();
-int fs_load();
-
 
 #endif

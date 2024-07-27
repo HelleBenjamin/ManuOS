@@ -14,7 +14,6 @@ char username[32];
 */
 
 void os_main() {
-    fs_load();
     if (disk_read(OS_Sector, OSS_ptr, 1) != 0) kernel_panic("Failed to load OS settings sector");
     taskbarColor = OS_Sector[0x00];
     for (int i = 0; i < 32; i++) {
@@ -37,7 +36,6 @@ void terminal() {
     nl();
     while (1){
         memset(prompt, 0, 40);
-        prints(getCurrentDir());
         printc('>');
         i = 0;
         while (1) {
@@ -125,80 +123,6 @@ void terminal() {
             prints("Rebooting...");
             sleepms(500);
             restart();
-        } else if (m_startsWith(prompt, "create ") == 0) {
-            char filename[16] = {0};
-            for (int i = 7; i < m_strlen(prompt); i++) {
-                filename[i - 7] = prompt[i];
-            }
-            filename[m_strlen(prompt) - 7] = '\0';
-            char extension[4] = {0};
-            for (int i = 0; i < 4; i++) {
-                extension[i] = prompt[m_strlen(prompt) - 6 + i];
-            }
-            fs_mkdir("Testdir");
-            fs_save();
-            if (fs_create(filename, extension, "Testdir", 1) == 0) {
-                prints("File created");
-                char test[11];
-                for (int i = 0; i < 10; i++) {
-                    test[i] = i + '0';
-                }
-                test[10] = 'b';
-                if (fs_write(filename, extension, test, sizeof(test)) == 0) prints("File written successfully");
-                else prints("Failed to write file");
-                fs_save();
-            } else {
-                prints("Failed to create file");
-            }
-        } else if (m_strcmp(prompt, "ls") == 0) {
-            fs_list();
-        } else if (m_strcmp(prompt, "txt") == 0) {
-            text_editor();
-        } else if (m_startsWith(prompt, "cd") == 0) {
-            char directory[32];
-            for (int i = 3; i < m_strlen(prompt); i++) {
-                directory[i - 3] = prompt[i];
-            }
-            directory[m_strlen(prompt) - 3] = '\0';
-            if (fs_chdir(directory) == 0) {
-                prints("Directory changed");
-                nl();
-            } else {
-                prints("Failed to change directory");
-                nl();
-            }
-        } else if (m_startsWith(prompt, "mkdir ") == 0) {
-            char directory[32];
-            for (int i = 6; i < m_strlen(prompt); i++) {
-                directory[i - 6] = prompt[i];
-            }
-            directory[m_strlen(prompt) - 6] = '\0';
-            if (fs_mkdir(directory) == 0) {
-                prints("Directory created");
-                fs_save();
-                nl();
-            } else {
-                prints("Failed to create directory");
-                nl();
-            }
-        } else if (m_strcmp(prompt, "dir") == 0) {
-            fs_dir();
-        } else if (m_strcmp(prompt, "test") == 0) {
-            fs_mkdir("Testdir");
-            fs_save();
-            if (fs_create("test1", "tex", "Testdir2", 1) == 0) {
-                prints("File created");
-                char test[11];
-                for (int i = 0; i < 10; i++) {
-                    test[i] = i + '0';
-                }
-                test[10] = 'b';
-                if (fs_write("test1", "tex", test, sizeof(test)) == 0) prints("File written successfully");
-                else prints("Failed to write file");
-                fs_save();
-            } else {
-                prints("Failed to create file");
-            }
         }
     }
 }
@@ -208,20 +132,6 @@ void text_editor() {
     clrs();
     while (1) {
         clrs();
-        prints("Open file: ");
-        char filename[32];
-        gets(filename);
-        if (m_strcmp(filename, "exit") == 0) {
-            clt();
-            return;
-        }
-        if (fs_read(filename, "txt",cProgram, sizeof(cProgram)) == 0) {
-            prints(cProgram);
-        }
-        fs_create("test2", "txt", 0, 1);
-        fs_write("test2", "txt", "0123456789", sizeof(cProgram));
-        fs_save();
-        getch();
         nl();
     }
 }
