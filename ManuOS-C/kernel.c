@@ -7,10 +7,13 @@ extern void os_main(); // defined in manuos.c
 
 /** Kernel functions and syscalls ***/
 
-/* ManuOS filesystem, SBF, Sector Based Filesystem
-Filename, 16 bytes, example: text.txt
-Extension, 3 bytes
+/* ManuOS filesystem, SBFS-4 (Sector Based File System)
+Filename, 16 bytes, example: text
+Extension, 3 bytes , example: txt
 Directory, 2 bytes, example: A
+Sector size, 1 byte, 1 = Single sector, 2 = Two sectors, 4 = Four sectors max
+Next sector, 2 bytes
+Data, remaining sector
 
 */
 
@@ -316,8 +319,13 @@ void fs_list() {
     for (int i = 0; i < fileSystemEntries; i++) {
         FileSystemEntry* entry = &fileSystem[i];
         prints(entry->filename);
-        prints(".");
+        printc('.');
         prints(entry->extension);
+        printc(' ');
+        prints(entry->directory);
+        printc(' ');
+        printi(entry->size);
+        prints("Bytes");
         newline();;
     }
 }

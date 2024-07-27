@@ -126,16 +126,15 @@ void terminal() {
             sleepms(500);
             restart();
         } else if (m_startsWith(prompt, "create ") == 0) {
-            char filename[32];
+            char filename[16] = {0};
             for (int i = 7; i < m_strlen(prompt); i++) {
                 filename[i - 7] = prompt[i];
             }
             filename[m_strlen(prompt) - 7] = '\0';
-            char extension[8];
-            for (int i = 0; i < 8; i++) {
+            char extension[4] = {0};
+            for (int i = 0; i < 4; i++) {
                 extension[i] = prompt[m_strlen(prompt) - 6 + i];
             }
-            extension[7] = '\0';
             fs_mkdir("Testdir");
             fs_save();
             if (fs_create(filename, extension, "Testdir", 1) == 0) {
@@ -144,7 +143,7 @@ void terminal() {
                 for (int i = 0; i < 10; i++) {
                     test[i] = i + '0';
                 }
-                test[10] = 'a';
+                test[10] = 'b';
                 if (fs_write(filename, extension, test, sizeof(test)) == 0) prints("File written successfully");
                 else prints("Failed to write file");
                 fs_save();
@@ -187,14 +186,14 @@ void terminal() {
         } else if (m_strcmp(prompt, "test") == 0) {
             fs_mkdir("Testdir");
             fs_save();
-            if (fs_create("test1", "tex", "Testdir", 1) == 0) {
+            if (fs_create("test1", "tex", "Testdir2", 1) == 0) {
                 prints("File created");
                 char test[11];
                 for (int i = 0; i < 10; i++) {
                     test[i] = i + '0';
                 }
-                test[10] = 'a';
-                if (fs_write("test2", "txt", test, sizeof(test)) == 0) prints("File written successfully");
+                test[10] = 'b';
+                if (fs_write("test1", "tex", test, sizeof(test)) == 0) prints("File written successfully");
                 else prints("Failed to write file");
                 fs_save();
             } else {
