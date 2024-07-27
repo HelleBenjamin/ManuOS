@@ -82,6 +82,9 @@ ManuOS comes with a Wuf++ interpreter. See more on [here](https://github.com/Pep
 - **^** - swap bl with bh, *bx = bh, bh = bl*
 
 # Changelog
+### ManuOS 0.0.4c-dev
+- Major change: Added file system
+- Small changes/bugfixes
 ### ManuOS 0.0.3c-release
 - Stable release
 - Small changes/bugfixes

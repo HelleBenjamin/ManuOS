@@ -1,13 +1,15 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
+#include "m_stdlib.h"
+
 #define NEWLINE 0x0d
 #define CARRIAGE_RETURN 0x0a
 #define TAB 0x09
 #define SPACE 0x20
 #define DEL 0x7f
 #define ESC 0x1b
-#define KERNEL_VERSION "Puppy-kernel 0.0.3c-release"
+#define KERNEL_VERSION "Puppy-kernel 0.0.4c-dev"
 
 void kernel_main();
 void sleepms(unsigned long ms);
@@ -34,4 +36,18 @@ short ifESC();
 int disk_read(char *buffer, int sector, int num_sectors);
 int disk_write(char *buffer, int sector, int num_sectors);
 void restart();
+int fs_create(const char* filename, const char* extension, uint32_t sector, uint32_t size);
+int fs_read(const char *filename, const char *extension, char *buffer, uint32_t size);
+int fs_write(const char *filename, const char *extension, const char *content, uint32_t size);
+void fs_initialize();
+void fs_list();
+void fs_dir();
+int fs_mkdir(const char* name);
+int fs_chdir(const char* name);
+int fs_delete(const char* filename, const char* extension);
+char* getCurrentDir();
+int save_file_system();
+int load_file_system();
+void fs_save();
+
 #endif

@@ -6,7 +6,7 @@ unsigned int cRow = 0;
 uint8_t taskbarColor;
 char cProgram[25];
 char OS_Sector[0x200]; // 512 bytes for os settings, starting at sector 38
-short OSS_ptr = 38;
+short OSS_ptr = 90;
 char username[32];
 /*OS Sector
 0x00 - Taskbar color
@@ -14,6 +14,7 @@ char username[32];
 */
 
 void os_main() {
+    load_file_system();
     if (disk_read(OS_Sector, OSS_ptr, 1) != 0) kernel_panic("Failed to load OS settings sector");
     taskbarColor = OS_Sector[0x00];
     for (int i = 0; i < 32; i++) {
@@ -29,12 +30,14 @@ void nl() {
 
 void terminal() {
     clt();
-    char *prompt;
+    char prompt[40];
     int i = 0;
     prints("Welcome to ManuOS, ");
     prints(username);
     nl();
     while (1){
+        memset(prompt, 0, 40);
+        prints(getCurrentDir());
         printc('>');
         i = 0;
         while (1) {
@@ -122,7 +125,102 @@ void terminal() {
             prints("Rebooting...");
             sleepms(500);
             restart();
+        } else if (m_startsWith(prompt, "create ") == 0) {
+            char filename[32];
+            for (int i = 7; i < m_strlen(prompt); i++) {
+                filename[i - 7] = prompt[i];
+            }
+            filename[m_strlen(prompt) - 7] = '\0';
+            char extension[8];
+            for (int i = 0; i < 8; i++) {
+                extension[i] = prompt[m_strlen(prompt) - 6 + i];
+            }
+            extension[7] = '\0';
+            if (fs_create(filename, extension, 50, 1) == 0) {
+                prints("File created");
+                fs_write(filename, extension, "This is a test", 10);
+                fs_save();
+            } else {
+                prints("Failed to create file");
+            }
+        } else if (m_strcmp(prompt, "ls") == 0) {
+            fs_list();
+        } else if (m_strcmp(prompt, "txt") == 0) {
+            text_editor();
+        } else if (m_startsWith(prompt, "cd") == 0) {
+            char directory[32];
+            for (int i = 3; i < m_strlen(prompt); i++) {
+                directory[i - 3] = prompt[i];
+            }
+            directory[m_strlen(prompt) - 3] = '\0';
+            if (fs_chdir(directory) == 0) {
+                prints("Directory changed");
+                nl();
+            } else {
+                prints("Failed to change directory");
+                nl();
+            }
+        } else if (m_startsWith(prompt, "mkdir ") == 0) {
+            char directory[32];
+            for (int i = 6; i < m_strlen(prompt); i++) {
+                directory[i - 6] = prompt[i];
+            }
+            directory[m_strlen(prompt) - 6] = '\0';
+            if (fs_mkdir(directory) == 0) {
+                prints("Directory created");
+                fs_save();
+                nl();
+            } else {
+                prints("Failed to create directory");
+                nl();
+            }
+        } else if (m_strcmp(prompt, "dir") == 0) {
+            fs_dir();
+        } else if (m_strcmp(prompt, "test") == 0) {
+            //load_file_system(); // Load the file system from disk
+
+            // Test directory and file operations
+            if (fs_mkdir("dir1") == 0) {
+                fs_save(); // Save file system state after creating directory
+                prints("Directory 'dir1' created");
+            }
+            if (fs_mkdir("dir2") == 0) {
+                fs_save(); // Save file system state after creating directory
+                prints("Directory 'dir2' created");
+            }
+
+            if (fs_chdir("dir1") == 0) {
+                if (fs_create("file1", "txt", 0, 1) == 0) {
+                    fs_write("file1", "txt", "Hello, dir1!", 50);
+                    fs_save(); // Save file system state after creating and writing file
+                }
+            } else {
+                kernel_panic("Failed to create dir1");
+            }
         }
+    }
+}
+
+void text_editor() {
+    m_strcpy(cProgram, "Text Editor");
+    clrs();
+    while (1) {
+        clrs();
+        prints("Open file: ");
+        char filename[32];
+        gets(filename);
+        if (m_strcmp(filename, "exit") == 0) {
+            clt();
+            return;
+        }
+        if (fs_read(filename, "txt",cProgram, sizeof(cProgram)) == 0) {
+            prints(cProgram);
+        }
+        fs_create("test2", "txt", 0, 1);
+        fs_write("test2", "txt", "0123456789", sizeof(cProgram));
+        fs_save();
+        getch();
+        nl();
     }
 }
 
