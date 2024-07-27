@@ -14,7 +14,7 @@ char username[32];
 */
 
 void os_main() {
-    load_file_system();
+    fs_load();
     if (disk_read(OS_Sector, OSS_ptr, 1) != 0) kernel_panic("Failed to load OS settings sector");
     taskbarColor = OS_Sector[0x00];
     for (int i = 0; i < 32; i++) {
@@ -136,9 +136,17 @@ void terminal() {
                 extension[i] = prompt[m_strlen(prompt) - 6 + i];
             }
             extension[7] = '\0';
-            if (fs_create(filename, extension, 50, 1) == 0) {
+            fs_mkdir("Testdir");
+            fs_save();
+            if (fs_create(filename, extension, "Testdir", 1) == 0) {
                 prints("File created");
-                fs_write(filename, extension, "This is a test", 10);
+                char test[11];
+                for (int i = 0; i < 10; i++) {
+                    test[i] = i + '0';
+                }
+                test[10] = 'a';
+                if (fs_write(filename, extension, test, sizeof(test)) == 0) prints("File written successfully");
+                else prints("Failed to write file");
                 fs_save();
             } else {
                 prints("Failed to create file");
@@ -177,25 +185,20 @@ void terminal() {
         } else if (m_strcmp(prompt, "dir") == 0) {
             fs_dir();
         } else if (m_strcmp(prompt, "test") == 0) {
-            //load_file_system(); // Load the file system from disk
-
-            // Test directory and file operations
-            if (fs_mkdir("dir1") == 0) {
-                fs_save(); // Save file system state after creating directory
-                prints("Directory 'dir1' created");
-            }
-            if (fs_mkdir("dir2") == 0) {
-                fs_save(); // Save file system state after creating directory
-                prints("Directory 'dir2' created");
-            }
-
-            if (fs_chdir("dir1") == 0) {
-                if (fs_create("file1", "txt", 0, 1) == 0) {
-                    fs_write("file1", "txt", "Hello, dir1!", 50);
-                    fs_save(); // Save file system state after creating and writing file
+            fs_mkdir("Testdir");
+            fs_save();
+            if (fs_create("test1", "tex", "Testdir", 1) == 0) {
+                prints("File created");
+                char test[11];
+                for (int i = 0; i < 10; i++) {
+                    test[i] = i + '0';
                 }
+                test[10] = 'a';
+                if (fs_write("test2", "txt", test, sizeof(test)) == 0) prints("File written successfully");
+                else prints("Failed to write file");
+                fs_save();
             } else {
-                kernel_panic("Failed to create dir1");
+                prints("Failed to create file");
             }
         }
     }

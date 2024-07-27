@@ -18,7 +18,7 @@ Directory, 2 bytes, example: A
 #define FS_START_SECTOR 60
 #define MAX_FILES 100
 #define MAX_FILENAME_LENGTH 16
-#define MAX_EXTENSION_LENGTH 3
+#define MAX_EXTENSION_LENGTH 4
 #define MAX_DIRECTORIES 10
 #define MAX_DIRECTORY_NAME_LENGTH 16
 
@@ -49,7 +49,7 @@ char* getCurrentDir() {
 
 
 void fs_initialize() {
-    if (load_file_system() != 0) {
+    if (fs_load() != 0) {
         fileSystemEntries = 0;
         directoryEntries = 0;
         m_strcpy(directories[directoryEntries].name, "/");
@@ -171,15 +171,6 @@ int load_file_system() {
 }
 
 
-
-
-void fs_save() {
-    if (save_file_system() != 0) {
-        kernel_panic("Failed to save file system");
-    }
-}
-
-
 int fs_mkdir(const char* name) {
     if (directoryEntries >= MAX_DIRECTORIES) {
         return -1; // Directory limit reached
@@ -228,25 +219,46 @@ int fs_chdir(const char* name) {
 
 
 
-int fs_create(const char* filename, const char* extension, uint32_t sector, uint32_t size) {
+int fs_create(const char *filename, const char *extension, const char *directory, uint32_t size) {
     if (fileSystemEntries >= MAX_FILES) {
-        return -1; // File system full
+        return -1; // No space for new files
+    }
+    for (int i = 0; i < fileSystemEntries; i++) {
+        if (strncmp(fileSystem[i].filename, filename, MAX_FILENAME_LENGTH) == 0 &&
+            strncmp(fileSystem[i].extension, extension, MAX_EXTENSION_LENGTH) == 0 &&
+            strncmp(fileSystem[i].directory, directory, MAX_DIRECTORY_NAME_LENGTH) == 0) {
+            return -1; // File already exists
+        }
     }
 
-    FileSystemEntry* entry = &fileSystem[fileSystemEntries++];
-    strncpy(entry->filename, filename, MAX_FILENAME_LENGTH);
-    entry->filename[MAX_FILENAME_LENGTH - 1] = '\0'; // Ensure null-termination
-    strncpy(entry->extension, extension, MAX_EXTENSION_LENGTH);
-    entry->extension[MAX_EXTENSION_LENGTH - 1] = '\0'; // Ensure null-termination
-    strncpy(entry->directory, currentDirectory, MAX_DIRECTORY_NAME_LENGTH);
-    entry->directory[MAX_DIRECTORY_NAME_LENGTH - 1] = '\0'; // Ensure null-termination
-    entry->sector = sector;
-    entry->size = size;
+    uint32_t sectors_needed = (size + SECTOR_SIZE - 1) / SECTOR_SIZE;
+    uint32_t start_sector = FS_START_SECTOR + 10; // Skip 10 sectors for file system metadata
 
-    return 0; // Success
+    for (uint32_t sector = start_sector; sector < start_sector + sectors_needed; sector++) {
+        // Check if the sector is free
+        int sector_in_use = 0;
+        for (int i = 0; i < fileSystemEntries; i++) {
+            uint32_t file_sectors = (fileSystem[i].size + SECTOR_SIZE - 1) / SECTOR_SIZE;
+            if (sector >= fileSystem[i].sector && sector < fileSystem[i].sector + file_sectors) {
+                sector_in_use = 1;
+                break;
+            }
+        }
+        if (!sector_in_use) {
+            // Allocate this sector to the new file
+            fileSystem[fileSystemEntries].sector = sector;
+            break;
+        }
+    }
+
+    strncpy(fileSystem[fileSystemEntries].filename, filename, MAX_FILENAME_LENGTH);
+    strncpy(fileSystem[fileSystemEntries].extension, extension, MAX_EXTENSION_LENGTH);
+    strncpy(fileSystem[fileSystemEntries].directory, directory, MAX_DIRECTORY_NAME_LENGTH);
+    fileSystem[fileSystemEntries].size = size;
+
+    fileSystemEntries++;
+    return 0; // File created successfully
 }
-
-
 
 FileSystemEntry* fs_find(const char* filename, const char* extension) {
     for (int i = 0; i < fileSystemEntries; i++) {
@@ -268,6 +280,7 @@ int fs_write(const char *filename, const char *extension, const char *content, u
             uint32_t num_sectors = (size + SECTOR_SIZE - 1) / SECTOR_SIZE; // Calculate needed sectors
             for (uint32_t j = 0; j < num_sectors; j++) {
                 if (disk_write((char *)(content + j * SECTOR_SIZE), fileSystem[i].sector + j, 1) != 0) {
+                    prints("-1");
                     return -1; // Error writing to disk
                 }
             }
@@ -275,7 +288,8 @@ int fs_write(const char *filename, const char *extension, const char *content, u
             return 0; // Successfully written
         }
     }
-    return -1; // File not found
+    prints("-2");
+    return -2; // File not found
 }
 
 int fs_read(const char *filename, const char *extension, char *buffer, uint32_t size) {
@@ -286,12 +300,14 @@ int fs_read(const char *filename, const char *extension, char *buffer, uint32_t 
             uint32_t num_sectors = (size + SECTOR_SIZE - 1) / SECTOR_SIZE; // Calculate needed sectors
             for (uint32_t j = 0; j < num_sectors; j++) {
                 if (disk_read((char *)(buffer + j * SECTOR_SIZE), fileSystem[i].sector + j, 1) != 0) {
-                    return -1; // Error reading from disk
+                    prints("-2");
+                    return -2; // Error reading from disk
                 }
             }
             return 0; // Successfully read
         }
     }
+    prints("-1");
     return -1; // File not found
 }
 
@@ -326,6 +342,118 @@ int fs_delete(const char* filename, const char* extension) {
     fileSystemEntries--;
     return 0; // Success
 }
+
+int fs_save() {
+    char buffer[SECTOR_SIZE];
+    int sector = FS_START_SECTOR;
+    int offset = 0;
+
+    memset(buffer, 0, SECTOR_SIZE);
+    for (int i = 0; i < directoryEntries; i++) {
+        if (offset + MAX_DIRECTORY_NAME_LENGTH * 2 > SECTOR_SIZE) {
+            if (disk_write(buffer, sector++, 1) != 0) {
+                return -1; // Error writing to disk
+            }
+            offset = 0;
+            memset(buffer, 0, SECTOR_SIZE);
+        }
+        memcpy(buffer + offset, directories[i].name, MAX_DIRECTORY_NAME_LENGTH);
+        offset += MAX_DIRECTORY_NAME_LENGTH;
+        memcpy(buffer + offset, directories[i].parent, MAX_DIRECTORY_NAME_LENGTH);
+        offset += MAX_DIRECTORY_NAME_LENGTH;
+    }
+    if (offset > 0) {
+        if (disk_write(buffer, sector++, 1) != 0) {
+            return -1; // Error writing to disk
+        }
+    }
+
+    offset = 0;
+    memset(buffer, 0, SECTOR_SIZE);
+    for (int i = 0; i < fileSystemEntries; i++) {
+        if (offset + MAX_FILENAME_LENGTH + MAX_EXTENSION_LENGTH + MAX_DIRECTORY_NAME_LENGTH + 2 * sizeof(uint32_t) > SECTOR_SIZE) {
+            if (disk_write(buffer, sector++, 1) != 0) {
+                return -1; // Error writing to disk
+            }
+            offset = 0;
+            memset(buffer, 0, SECTOR_SIZE);
+        }
+        memcpy(buffer + offset, fileSystem[i].filename, MAX_FILENAME_LENGTH);
+        offset += MAX_FILENAME_LENGTH;
+        memcpy(buffer + offset, fileSystem[i].extension, MAX_EXTENSION_LENGTH);
+        offset += MAX_EXTENSION_LENGTH;
+        memcpy(buffer + offset, fileSystem[i].directory, MAX_DIRECTORY_NAME_LENGTH);
+        offset += MAX_DIRECTORY_NAME_LENGTH;
+        memcpy(buffer + offset, &fileSystem[i].sector, sizeof(uint32_t));
+        offset += sizeof(uint32_t);
+        memcpy(buffer + offset, &fileSystem[i].size, sizeof(uint32_t));
+        offset += sizeof(uint32_t);
+    }
+    if (offset > 0) {
+        if (disk_write(buffer, sector++, 1) != 0) {
+            return -1; // Error writing to disk
+        }
+    }
+
+    return 0;
+}
+
+int fs_load() {
+    char buffer[SECTOR_SIZE];
+    int sector = FS_START_SECTOR;
+    int offset = 0;
+
+    directoryEntries = 0;
+    while (directoryEntries < MAX_DIRECTORIES) {
+        if (disk_read(buffer, sector++, 1) != 0) {
+            return -1; // Error reading from disk
+        }
+        offset = 0;
+        while (offset < SECTOR_SIZE && directoryEntries < MAX_DIRECTORIES) {
+            if (buffer[offset] == 0) {
+                break; // End of valid entries
+            }
+            memcpy(directories[directoryEntries].name, buffer + offset, MAX_DIRECTORY_NAME_LENGTH);
+            offset += MAX_DIRECTORY_NAME_LENGTH;
+            memcpy(directories[directoryEntries].parent, buffer + offset, MAX_DIRECTORY_NAME_LENGTH);
+            offset += MAX_DIRECTORY_NAME_LENGTH;
+            directoryEntries++;
+        }
+        if (buffer[offset] == 0) {
+            break; // End of valid entries
+        }
+    }
+
+    fileSystemEntries = 0;
+    while (fileSystemEntries < MAX_FILES) {
+        if (disk_read(buffer, sector++, 1) != 0) {
+            return -1; // Error reading from disk
+        }
+        offset = 0;
+        while (offset < SECTOR_SIZE && fileSystemEntries < MAX_FILES) {
+            if (buffer[offset] == 0) {
+                break; // End of valid entries
+            }
+            memcpy(fileSystem[fileSystemEntries].filename, buffer + offset, MAX_FILENAME_LENGTH);
+            offset += MAX_FILENAME_LENGTH;
+            memcpy(fileSystem[fileSystemEntries].extension, buffer + offset, MAX_EXTENSION_LENGTH);
+            offset += MAX_EXTENSION_LENGTH;
+            memcpy(fileSystem[fileSystemEntries].directory, buffer + offset, MAX_DIRECTORY_NAME_LENGTH);
+            offset += MAX_DIRECTORY_NAME_LENGTH;
+            memcpy(&fileSystem[fileSystemEntries].sector, buffer + offset, sizeof(uint32_t));
+            offset += sizeof(uint32_t);
+            memcpy(&fileSystem[fileSystemEntries].size, buffer + offset, sizeof(uint32_t));
+            offset += sizeof(uint32_t);
+            fileSystemEntries++;
+        }
+        if (buffer[offset] == 0) {
+            break; // End of valid entries
+        }
+    }
+
+    return 0;
+}
+
 
 void newline() {
     asm(
