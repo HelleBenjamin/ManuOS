@@ -211,7 +211,6 @@ int rm(char *filename, char dir){
     int sector = find_file(filename, dir);
     char sBuf[512];
     disk_read(sBuf, sector, 1); 
-    printc(sBuf[1]);
     for (int i = 0; i < 512; i++){
         sBuf[i] = 0;
     }

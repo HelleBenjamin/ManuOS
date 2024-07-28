@@ -2,7 +2,7 @@
 #define MANUOS_H
 
 #define OS_VERSION "ManuOS 0.0.4c-dev" 
-#define TERMINAL_HELP_MSG "Commands: version, help, wpp, dices, clear, calculator, ball, echo, taskbar, username, restart, color, setup, txt, read <dir> <filename>, create, mkdir <dir>, list <dir>, cd <dir>, rmdir <dir>, ls"
+#define TERMINAL_HELP_MSG "Commands: version, help, wpp, dices, clear, calculator, ball, echo, taskbar, username, restart, color, setup, txt, read <dir> <filename>, create, mkdir <dir>, list <dir>, cd <dir>, rmdir <dir>, ls, rm <filename>"
 
 #define BLACK 0x0
 #define BLUE 0x1
