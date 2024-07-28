@@ -20,6 +20,8 @@
 #define MAX_SECTORS 4
 #define DATA_SIZE 500 // 512 - 12
 
+extern char currentDir;
+
 void kernel_main();
 void sleepms(unsigned long ms);
 void printc(char c);
@@ -49,5 +51,11 @@ int create_file(char* filename, char dir, char* data, int size);
 int read_file(char *filename, char dir, char *buffer);
 int find_file(char* filename, char dir);
 int edit_file(char *filename, char dir, char *data, int size);
+int list_files(char dir);
+int list_dirs();
+int mkdir(char dirname);
+int find_dir(char dirname);
+
+char getCurrentDir();
 
 #endif

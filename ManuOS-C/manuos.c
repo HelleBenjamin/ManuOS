@@ -36,6 +36,7 @@ void terminal() {
     nl();
     while (1){
         memset(prompt, 0, 40);
+        printc(getCurrentDir());
         printc('>');
         i = 0;
         while (1) {
@@ -163,7 +164,18 @@ void terminal() {
             if (create_file(filename, dir, data, 1) == 0) prints("File created successfully");
             else prints("Failed to create file");
             nl();
+        } else if (startsWith(prompt, "list ") == 0) {
+            list_files(prompt[5]);
+            nl();
+        } else if (startsWith(prompt, "mkdir ") == 0){
+            char dir = prompt[6];
+            if (mkdir(dir) == 0) prints("Directory created");
+            else prints("Failed to create directory");
+            nl();
+        } else if (strcmp(prompt, "dir") == 0) {
+            list_dirs();
         }
+        
     }
 }
 

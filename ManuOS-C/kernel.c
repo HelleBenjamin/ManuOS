@@ -14,12 +14,25 @@ Starts at sector 60. Thing that must be defined: Sector size, number of files, f
  - Sector size, 1 byte, 1 = Single sector, 2 = Two sectors, 4 = Four sectors max
  - Next sector, 1 byte
  - Data, remaining sector
+
+Directory structure:
+
+Root /
+     |-- A
+     |-- B
+     |-- C
+     ect..
+
 */
 
 uint16_t nextSector = 60;
+char currentDir = '/';
 
 int create_file(char *filename, char dir, char *data, int size) {
     char buf[SECTOR_SIZE * size];
+    if (find_dir(dir) == 1) {
+      return 2; // returns 2 if directory not found  
+    }
     for (int i = 0; i < 12; i++) {
         buf[i] = filename[i];
     }
@@ -41,6 +54,9 @@ int create_file(char *filename, char dir, char *data, int size) {
 int find_file(char *filename, char dir) {
     char buf[SECTOR_SIZE];
     char fname[FILENAME_SIZE];
+    if (find_dir(dir) == 1) {
+      return 2; // returns 2 if directory not found  
+    }
     for (int i = START_SECTOR; i < END_SECTOR; i++) {
         int status = disk_read(buf, i, 1);
         strncpy(fname, buf, 12);
@@ -52,6 +68,22 @@ int find_file(char *filename, char dir) {
         }
     }
     return 0;
+}
+
+int find_dir(char dir) {
+    char buf[SECTOR_SIZE];
+    char dir1;
+    disk_read(buf, DIR_SECTOR, 1);
+    for (int i = 1; i < 512; i++) {
+        if (buf[i] == dir) {
+            return 0; // returns 0 if found
+        }
+    }
+    return 1; // returns 1 if not found
+}
+
+char getCurrentDir() {
+    return currentDir;
 }
 
 int read_file(char *filename, char dir, char *buffer) {
@@ -70,6 +102,7 @@ int read_file(char *filename, char dir, char *buffer) {
 
 int edit_file(char *filename, char dir, char *data, int size) {
     char buf[SECTOR_SIZE * size];
+
     int sector = find_file(filename, dir);
     if (sector == 0) {
         return 1;
@@ -84,10 +117,38 @@ int edit_file(char *filename, char dir, char *data, int size) {
 }
 
 int mkdir(char dirname){
-    char sBuf[512];
+    char sBuf[512]; //0x0 - dircount, 0x1 - 0x200 - dirnames 
     disk_read(sBuf, DIR_SECTOR, 1);
+    sBuf[0] = sBuf[0] + 1;
+    sBuf[sBuf[0]] = dirname;
+    disk_write(sBuf, DIR_SECTOR, 1);
+    return 0;
+}
 
+int cd(char dirname){
+    currentDir = dirname;
+}
 
+int list_files(char dirname){
+    for (int i = START_SECTOR; i < END_SECTOR; i++){
+        char sBuf[512];
+        disk_read(sBuf, i, 1);
+        if (sBuf[12] == dirname){
+            prints(sBuf);
+            newline();
+        }  
+    }
+    
+}
+
+int list_dirs(){
+    char dBuf[512];
+    disk_read(dBuf, DIR_SECTOR, 1);
+    for (int i = 0; i < dBuf[0]; i++){
+        printc(dBuf[i+1]);
+        newline();
+    }
+    
 }
 
 void newline() {
