@@ -19,6 +19,7 @@
 #define END_SECTOR 120
 #define MAX_SECTORS 4
 #define DATA_SIZE 500 // 512 - 12
+#define FS_SECTOR 58
 
 extern char currentDir;
 
@@ -55,6 +56,10 @@ int list_files(char dir);
 int list_dirs();
 int mkdir(char dirname);
 int find_dir(char dirname);
+int ls();
+int cd(char dirname);
+
+int init_fs();
 
 char getCurrentDir();
 

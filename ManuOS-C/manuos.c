@@ -14,6 +14,7 @@ char username[32];
 */
 
 void os_main() {
+    init_fs();
     if (disk_read(OS_Sector, OSS_ptr, 1) != 0) kernel_panic("Failed to load OS settings sector");
     taskbarColor = OS_Sector[0x00];
     for (int i = 0; i < 32; i++) {
@@ -25,6 +26,33 @@ void os_main() {
 void nl() {
     newline();
     taskbar();
+}
+
+void setup(){
+    prints("ManuOS Setup");
+    nl();
+    prints("Username: ");
+    gets(username);
+    for (int i = 0; i < 32; i++) {
+        OS_Sector[0x0f + i] = username[i];
+    }
+    nl();
+    OS_Sector[0x00] = BLUE;
+    disk_write(OS_Sector, OSS_ptr, 1);
+    char fs_buf[512];
+    disk_read(fs_buf, FS_SECTOR, 1);
+    fs_buf[0] = 61;
+    fs_buf[1] = '/';
+    char tbuf[512] = {0};
+    tbuf[0] = 1;
+    tbuf[1] = '/';
+    disk_write(tbuf, DIR_SECTOR, 1);
+    disk_write(fs_buf, FS_SECTOR, 1);
+    prints("ManuOS Setup Complete");
+    nl();
+    prints("Rebooting...");
+    sleepms(500);
+    restart();
 }
 
 void terminal() {
@@ -109,21 +137,7 @@ void terminal() {
             }
             nl();
         } else if (strcmp(prompt, "setup") == 0) {
-            prints("ManuOS Setup");
-            nl();
-            prints("Username: ");
-            gets(username);
-            for (int i = 0; i < 32; i++) {
-                OS_Sector[0x0f + i] = username[i];
-            }
-            nl();
-            OS_Sector[0x00] = BLUE;
-            disk_write(OS_Sector, OSS_ptr, 1);
-            prints("ManuOS Setup Complete");
-            nl();
-            prints("Rebooting...");
-            sleepms(500);
-            restart();
+            setup();
         } else if (strcmp(prompt, "test") == 0) {
             char tbuf[512] = {0};
             strcpy(tbuf, "This is a test file");
@@ -174,6 +188,11 @@ void terminal() {
             nl();
         } else if (strcmp(prompt, "dir") == 0) {
             list_dirs();
+        } else if (strcmp(prompt, "ls") == 0) {
+            ls();
+        } else if (startsWith(prompt, "cd ") == 0) {
+            char dir = prompt[3];
+            cd(dir);
         }
         
     }

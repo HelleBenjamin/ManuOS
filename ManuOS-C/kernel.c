@@ -25,8 +25,18 @@ Root /
 
 */
 
-uint16_t nextSector = 60;
-char currentDir = '/';
+uint16_t nextSector;
+char currentDir;
+
+int init_fs() {
+    char fsbuf[512]; // 0x0 - Next sector, 0x1 - Current directory
+    if (disk_read(fsbuf, FS_SECTOR, 1) != 0) {
+        kernel_panic("Failed to load filesystem");
+    }
+    nextSector = fsbuf[0];
+    currentDir = fsbuf[1];
+    return 0;
+}
 
 int create_file(char *filename, char dir, char *data, int size) {
     char buf[SECTOR_SIZE * size];
@@ -126,7 +136,19 @@ int mkdir(char dirname){
 }
 
 int cd(char dirname){
+    if (find_dir(dirname) == 1) {
+        return 1;
+    }
+    if (dirname == '/') {
+        currentDir = '/';
+        return 0;
+    }
     currentDir = dirname;
+    return 0;
+}
+
+int ls(){
+    list_files(currentDir);
 }
 
 int list_files(char dirname){
@@ -138,7 +160,6 @@ int list_files(char dirname){
             newline();
         }  
     }
-    
 }
 
 int list_dirs(){
