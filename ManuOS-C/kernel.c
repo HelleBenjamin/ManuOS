@@ -40,13 +40,13 @@ int init_fs() {
 }
 
 int find_free_sector() {
-    char sector[512];
+    char sectorbuf[512];
     int i = 0;
     while (i < END_SECTOR) {
-        if (disk_read(sector, i + START_SECTOR, 1) != 0) {
+        if (disk_read(sectorbuf, i + START_SECTOR, 1) != 0) {
             kernel_panic("Failed to read sector");
         }
-        if (sector[0] == 0) {
+        if (sectorbuf[0] == 0) {
             return i + START_SECTOR;
         }
         i++;
@@ -67,11 +67,10 @@ int create_file(char *filename, char dir, char *data, int size) {
     for (int i = 15; i < SECTOR_SIZE * size; i++) {
         buf[i] = data[i - 15];
     }
-    int status = disk_write(buf, nextSector, size);
+    int status = disk_write(buf, find_free_sector(), size);
     if (status != 0) {
         return 1;
     }
-    nextSector += size;
     return 0;
 
 }
