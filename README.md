@@ -84,7 +84,7 @@ ManuOS comes with a Wuf++ interpreter. See more on [here](https://github.com/Pep
 
 # Changelog
 ### ManuOS 0.0.4c-dev
-- Major change: Added file system
+- Major change: Added a simple file system
 - Small changes/bugfixes
 ### ManuOS 0.0.3c-release
 - Stable release

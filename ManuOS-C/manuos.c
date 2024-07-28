@@ -29,6 +29,8 @@ void nl() {
 }
 
 void setup(){
+    strcpy(cProgram, "ManuOS Setup");
+    clrs();
     prints("ManuOS Setup");
     nl();
     prints("Username: ");
@@ -63,7 +65,7 @@ void terminal() {
     prints(username);
     nl();
     while (1){
-        memset(prompt, 0, 40);
+        strcpy(prompt, 0);
         printc(getCurrentDir());
         printc('>');
         i = 0;
@@ -84,8 +86,8 @@ void terminal() {
             }
             i++;
         }
-
-        if (strcmp(prompt, "version") == 0) {
+        if (strcmp(prompt, 0) == 0) {
+        } else if (strcmp(prompt, "version") == 0) {
             prints("Copyright (C) 2024 Benjamin H. All rights reserved.");
             nl();
             prints("OS: " OS_VERSION);
@@ -180,7 +182,6 @@ void terminal() {
             nl();
         } else if (startsWith(prompt, "list ") == 0) {
             list_files(prompt[5]);
-            nl();
         } else if (startsWith(prompt, "mkdir ") == 0){
             char dir = prompt[6];
             if (mkdir(dir) == 0) prints("Directory created");

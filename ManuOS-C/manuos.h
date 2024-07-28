@@ -21,6 +21,7 @@
 #define YELLOW 0xe
 #define WHITE 0xf
 
+void nl();
 void os_main();
 void terminal();
 void wpp_interpreter();

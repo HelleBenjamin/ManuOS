@@ -1,5 +1,6 @@
 #include "kernel.h"
 #include "m_stdlib.h"
+#include "manuos.h"
 
 extern void os_main(); // defined in manuos.c
 
@@ -157,7 +158,7 @@ int list_files(char dirname){
         disk_read(sBuf, i, 1);
         if (sBuf[12] == dirname){
             prints(sBuf);
-            newline();
+            nl();
         }  
     }
 }
@@ -165,9 +166,12 @@ int list_files(char dirname){
 int list_dirs(){
     char dBuf[512];
     disk_read(dBuf, DIR_SECTOR, 1);
-    for (int i = 0; i < dBuf[0]; i++){
+    prints("/");
+    nl();
+    for (int i = 1; i < dBuf[0]; i++){
+        prints(" |-- ");
         printc(dBuf[i+1]);
-        newline();
+        nl();
     }
 }
 
