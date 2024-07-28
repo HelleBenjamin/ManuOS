@@ -3,7 +3,9 @@
 
 /* Custom standard library for ManuOS */
 
-short m_strcmp(const char *str1, const char *str2) { // string compare
+static char *heap = (char*)0x500;
+
+short strcmp(const char *str1, const char *str2) { // string compare
     int i = 0;
     while (str1[i] != '\0') {
         if (str1[i] != str2[i]) {
@@ -14,7 +16,7 @@ short m_strcmp(const char *str1, const char *str2) { // string compare
     return 0;
 }
 
-void m_strcpy(char *dest, char *src) {
+void strcpy(char *dest, char *src) {
     while (*src) {
         *dest = *src;
         dest++;
@@ -23,14 +25,14 @@ void m_strcpy(char *dest, char *src) {
     *dest = '\0';
 }
 
-void m_strcat(char *dest, char *src) {
+void strcat(char *dest, char *src) {
     while (*dest) {
         dest++;
     }
-    m_strcpy(dest, src);
+    strcpy(dest, src);
 }
 
-short m_strlen(char *str) {
+short strlen(char *str) {
     unsigned int i = 0;
     while (str[i]) {
         i++;
@@ -38,7 +40,7 @@ short m_strlen(char *str) {
     return i;
 }
 
-short m_startsWith(char *str1, char *str2) {
+short startsWith(char *str1, char *str2) {
     while (*str2 != '\0') {
         if (*str1 != *str2) {
             return 1;
@@ -80,4 +82,16 @@ int strncmp(const char *str1, const char *str2, size_t n) {
         }
     }
     return 0;
+}
+
+
+void* malloc(size_t size) {
+    char *p = heap;
+    heap += size;
+    return p;
+}
+
+void free(void *ptr) {
+    heap = heap - (int)ptr * sizeof(char);
+    return;
 }

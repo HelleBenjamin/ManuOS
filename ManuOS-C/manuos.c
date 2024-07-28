@@ -56,38 +56,38 @@ void terminal() {
             i++;
         }
 
-        if (m_strcmp(prompt, "version") == 0) {
+        if (strcmp(prompt, "version") == 0) {
             prints("Copyright (C) 2024 Benjamin H. All rights reserved.");
             nl();
             prints("OS: " OS_VERSION);
             nl();
             prints("KERNEL: " KERNEL_VERSION);
             nl();
-        } else if (m_strcmp(prompt, "help") == 0) {
+        } else if (strcmp(prompt, "help") == 0) {
             prints(TERMINAL_HELP_MSG);
             nl();
-        } else if (m_strcmp(prompt, "wpp") == 0) {
+        } else if (strcmp(prompt, "wpp") == 0) {
             wpp_interpreter();
-        } else if (m_strcmp(prompt, "dices") == 0) {
+        } else if (strcmp(prompt, "dices") == 0) {
             dices();
-        } else if (m_strcmp(prompt, "clear") == 0) {
+        } else if (strcmp(prompt, "clear") == 0) {
             clt();
-        } else if (m_strcmp(prompt, "calculator") == 0 || m_strcmp(prompt, "calc") == 0) {
+        } else if (strcmp(prompt, "calculator") == 0 || strcmp(prompt, "calc") == 0) {
             calculator();
-        } else if (m_strcmp(prompt, "ball") == 0) {
+        } else if (strcmp(prompt, "ball") == 0) {
             bouncing_ball();
-        } else if (m_strcmp(prompt, "taskbar") == 0) {
+        } else if (strcmp(prompt, "taskbar") == 0) {
             prints("Change taskbar color: ");
             taskbarColor = getih();
             OS_Sector[0x00] = taskbarColor;
             disk_write(OS_Sector, OSS_ptr, 1);
             init_taskbar();
-        } else if (m_strcmp(prompt, "color") == 0) {
+        } else if (strcmp(prompt, "color") == 0) {
             prints("Colors: 0 - Black, 1 - Blue 2 - Green, 3 - Cyan, 4 - Red, 5 - Magenta, 6 - Brown, 7 - Light Gray, 8 - Dark Gray, 9 - Light Blue, 10 - Light Green, 11 - Light Cyan, 12 - Light Red, 13 - Light Magenta, 14 - Yellow, 15 - White");
             nl();
-        } else if (m_strcmp(prompt, "username") == 0) {
+        } else if (strcmp(prompt, "username") == 0) {
             prints("Current username: ");
-            for (int i = 0; i < m_strlen(username); i++) {
+            for (int i = 0; i < strlen(username); i++) {
                 printc(username[i]);
             }
             nl();
@@ -99,15 +99,15 @@ void terminal() {
             if (disk_write(OS_Sector, OSS_ptr, 1) != 0) prints("Failed to write sector");
             nl();
 
-        } else if (m_strcmp(prompt, "restart") == 0) {
+        } else if (strcmp(prompt, "restart") == 0) {
             restart();
             
-        } else if (m_startsWith(prompt, "echo ") == 0) {
-            for (int i = 5; i < m_strlen(prompt); i++) {
+        } else if (startsWith(prompt, "echo ") == 0) {
+            for (int i = 5; i < strlen(prompt); i++) {
                 printc(prompt[i]);
             }
             nl();
-        } else if (m_strcmp(prompt, "setup") == 0) {
+        } else if (strcmp(prompt, "setup") == 0) {
             prints("ManuOS Setup");
             nl();
             prints("Username: ");
@@ -123,12 +123,52 @@ void terminal() {
             prints("Rebooting...");
             sleepms(500);
             restart();
+        } else if (strcmp(prompt, "test") == 0) {
+            char tbuf[512] = {0};
+            strcpy(tbuf, "This is a test file");
+            if (create_file("Testfile", 'A', tbuf, 1) == 0){
+                prints("File created");
+            }
+            char cbuf[512] = {0};
+            read_file("Testfile", 'A', cbuf);
+            prints(cbuf);
+            strcpy(cbuf, "This is a second test file");
+            create_file("Testfiles", 'B', cbuf, 1);
+            read_file("Testfiles", 'B', tbuf);
+            prints(tbuf);
+        } else if (startsWith(prompt, "read ") == 0) {
+            char filename[12] = {0};
+            char dir = prompt[5];
+            for (int i = 7; i < strlen(prompt); i++) {
+                filename[i - 7] = prompt[i];
+            }
+            char cbuf[512] = {0};
+            read_file(filename, dir, cbuf);
+            prints(cbuf);
+            nl();
+        } else if (strcmp(prompt, "create") == 0) {
+            char filename[12] = {0};
+            char dir;
+            char data[DATA_SIZE] = {0};
+            prints("Enter Filename: ");
+            gets(filename);
+            nl();
+            prints("Enter Directory: ");
+            dir = getch();
+            printc(dir);
+            nl();
+            prints("Enter Data: ");
+            gets(data);
+            nl();
+            if (create_file(filename, dir, data, 1) == 0) prints("File created successfully");
+            else prints("Failed to create file");
+            nl();
         }
     }
 }
 
 void text_editor() {
-    m_strcpy(cProgram, "Text Editor");
+    strcpy(cProgram, "Text Editor");
     clrs();
     while (1) {
         clrs();
@@ -140,7 +180,7 @@ int diceroll() {
     return random(1, 6);
 }
 void dices(){
-    m_strcpy(cProgram, "Dices");
+    strcpy(cProgram, "Dices");
     clrs();
     int dices[5] = {1};
     int initial_seed;
@@ -223,7 +263,7 @@ void dices(){
 }
 
 void wpp_interpreter() {
-    m_strcpy(cProgram, "Wuf++ Interpreter");
+    strcpy(cProgram, "Wuf++ Interpreter");
     clrs();
     prints("Press ESC to exit, enter to execute the code");
     nl();
@@ -381,7 +421,7 @@ void wpp_interpreter() {
 }
 
 void calculator() {
-    m_strcpy(cProgram, "Calculator");
+    strcpy(cProgram, "Calculator");
     clrs();
     int a, b, c, sum;
     cloop:
@@ -462,17 +502,17 @@ void clrs() { //clear screen and update taskbar
 }
 
 void clt(){ //clear screen for terminal, use for when exiting to terminal
-    m_strcpy(cProgram, "Terminal");
+    strcpy(cProgram, "Terminal");
     clrs();
 }
 
 void taskbar() { //simple taskbar, not required in custom programs
     char tskbr[80] = {0};
-    m_strcpy(tskbr, username);
-    m_strcat(tskbr, " | ");
-    m_strcat(tskbr, cProgram);	
-    m_strcat(tskbr, " | ");
-    m_strcat(tskbr, OS_VERSION);
+    strcpy(tskbr, username);
+    strcat(tskbr, " | ");
+    strcat(tskbr, cProgram);	
+    strcat(tskbr, " | ");
+    strcat(tskbr, OS_VERSION);
     int i = 0;
     for (int i = 0; i < 80; i++) {
         WriteCharacter(tskbr[i], 0xf, taskbarColor, i, 0);

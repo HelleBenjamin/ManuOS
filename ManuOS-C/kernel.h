@@ -11,6 +11,15 @@
 #define ESC 0x1b
 #define KERNEL_VERSION "Puppy-kernel 0.0.4c-dev"
 
+#define SECTOR_SIZE 512
+#define FILENAME_SIZE 12
+#define START_SECTOR 60
+#define DIR_SIZE 1
+#define DIR_SECTOR 59
+#define END_SECTOR 120
+#define MAX_SECTORS 4
+#define DATA_SIZE 500 // 512 - 12
+
 void kernel_main();
 void sleepms(unsigned long ms);
 void printc(char c);
@@ -36,5 +45,9 @@ short ifESC();
 int disk_read(char *buffer, int sector, int num_sectors);
 int disk_write(char *buffer, int sector, int num_sectors);
 void restart();
+int create_file(char* filename, char dir, char* data, int size);
+int read_file(char *filename, char dir, char *buffer);
+int find_file(char* filename, char dir);
+int edit_file(char *filename, char dir, char *data, int size);
 
 #endif

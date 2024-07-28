@@ -8,14 +8,87 @@ extern void os_main(); // defined in manuos.c
 /** Kernel functions and syscalls ***/
 
 /* ManuOS filesystem, SBFS-4 (Sector Based File System)
-Filename, 16 bytes, example: text
-Extension, 3 bytes , example: txt
-Directory, 2 bytes, example: A
-Sector size, 1 byte, 1 = Single sector, 2 = Two sectors, 4 = Four sectors max
-Next sector, 2 bytes
-Data, remaining sector
-
+Starts at sector 60. Thing that must be defined: Sector size, number of files, filesystem entries and start sector
+ - Filename, 12 bytes, example: text
+ - Directory, 1 byte, example: A
+ - Sector size, 1 byte, 1 = Single sector, 2 = Two sectors, 4 = Four sectors max
+ - Next sector, 1 byte
+ - Data, remaining sector
 */
+
+uint16_t nextSector = 60;
+
+int create_file(char *filename, char dir, char *data, int size) {
+    char buf[SECTOR_SIZE * size];
+    for (int i = 0; i < 12; i++) {
+        buf[i] = filename[i];
+    }
+    buf[12] = dir;
+    buf[13] = size;
+    buf[14] = nextSector + size;
+    for (int i = 15; i < SECTOR_SIZE * size; i++) {
+        buf[i] = data[i - 15];
+    }
+    int status = disk_write(buf, nextSector, size);
+    if (status != 0) {
+        return 1;
+    }
+    nextSector += size;
+    return 0;
+
+}
+
+int find_file(char *filename, char dir) {
+    char buf[SECTOR_SIZE];
+    char fname[FILENAME_SIZE];
+    for (int i = START_SECTOR; i < END_SECTOR; i++) {
+        int status = disk_read(buf, i, 1);
+        strncpy(fname, buf, 12);
+        if (status != 0) {
+            return 1;
+        }
+        if (strcmp(fname, filename) == 0 && buf[12] == dir) {
+            return i; // returns sector
+        }
+    }
+    return 0;
+}
+
+int read_file(char *filename, char dir, char *buffer) {
+    char buf[SECTOR_SIZE];
+    int sector = find_file(filename, dir);
+    if (sector == 0) {
+        return 1;
+    }
+    int status = disk_read(buf, sector, 1);
+    for (int i = 15; i < SECTOR_SIZE; i++) {
+        buffer[i - 15] = buf[i];
+    }
+    return 0;
+
+}
+
+int edit_file(char *filename, char dir, char *data, int size) {
+    char buf[SECTOR_SIZE * size];
+    int sector = find_file(filename, dir);
+    if (sector == 0) {
+        return 1;
+    }
+    int status = disk_read(buf, sector, size);
+    strncpy(buf, data, size);
+    status = disk_write(buf, sector, size);
+    if (status != 0) {
+        return 1;
+    }
+    return 0;
+}
+
+int mkdir(char dirname){
+    char sBuf[512];
+    disk_read(sBuf, DIR_SECTOR, 1);
+
+
+}
 
 void newline() {
     asm(
