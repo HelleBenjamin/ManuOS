@@ -209,11 +209,13 @@ int rmdir(char dirname){
 }
 
 int rm(char *filename, char dir){
-    int sector;
-    if (sector = find_file(filename, dir) == 1) {
-        return 1;
+    int sector = find_file(filename, dir);
+    char sBuf[512];
+    disk_read(sBuf, sector, 1); 
+    printc(sBuf[1]);
+    for (int i = 0; i < 512; i++){
+        sBuf[i] = 0;
     }
-    char sBuf[512] = {0};
     disk_write(sBuf, sector, 1);
     return 0;
 }
@@ -259,8 +261,8 @@ int disk_read(char *buffer, int sector, int num_sectors) {
 }
 
 int disk_write(char *buffer, int sector, int num_sectors) {
-    if (sector < 50) {
-        return -1; // Prevent writing outside the file system area
+    if (sector == 0) {
+        return -3; // Prevent writing to boot sector
     }
 
     int status;

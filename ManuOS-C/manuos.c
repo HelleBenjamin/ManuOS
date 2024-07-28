@@ -191,6 +191,12 @@ void terminal() {
         } else if (startsWith(prompt, "rmdir") == 0) {
             char dir = prompt[6];
             rmdir(dir);
+        } else if (startsWith(prompt, "rm") == 0) {
+            char filename[FILENAME_SIZE] = {0};
+            for (int i = 3; i < strlen(prompt); i++) {
+                filename[i - 3] = prompt[i];
+            }
+            rm(filename, currentDir);
         }
         
     }
