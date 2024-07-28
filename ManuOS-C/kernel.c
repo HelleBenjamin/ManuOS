@@ -10,10 +10,10 @@ extern void os_main(); // defined in manuos.c
 
 /* ManuOS filesystem, SBFS-4 (Sector Based File System)
 Starts at sector 60. Thing that must be defined: Sector size, number of files, filesystem entries and start sector
+ - Status, 1 byte, 1 = Taken, 0 = Available
  - Filename, 12 bytes, example: text
  - Directory, 1 byte, example: A
  - Sector size, 1 byte, 1 = Single sector, 2 = Two sectors, 4 = Four sectors max
- - Next sector, 1 byte
  - Data, remaining sector
 
 Directory structure:
@@ -39,17 +39,31 @@ int init_fs() {
     return 0;
 }
 
+int find_free_sector() {
+    char sector[512];
+    int i = 0;
+    while (i < END_SECTOR) {
+        if (disk_read(sector, i + START_SECTOR, 1) != 0) {
+            kernel_panic("Failed to read sector");
+        }
+        if (sector[0] == 0) {
+            return i + START_SECTOR;
+        }
+        i++;
+    }
+}
+
 int create_file(char *filename, char dir, char *data, int size) {
     char buf[SECTOR_SIZE * size];
     if (find_dir(dir) == 1) {
       return 2; // returns 2 if directory not found  
     }
-    for (int i = 0; i < 12; i++) {
-        buf[i] = filename[i];
+    for (int i = 1; i < 12; i++) {
+        buf[i] = filename[i - 1];
     }
-    buf[12] = dir;
-    buf[13] = size;
-    buf[14] = nextSector + size;
+    buf[0] = 1; // Taken
+    buf[13] = dir;
+    buf[14] = size;
     for (int i = 15; i < SECTOR_SIZE * size; i++) {
         buf[i] = data[i - 15];
     }
@@ -70,11 +84,11 @@ int find_file(char *filename, char dir) {
     }
     for (int i = START_SECTOR; i < END_SECTOR; i++) {
         int status = disk_read(buf, i, 1);
-        strncpy(fname, buf, 12);
+        strncpy(fname, buf + 1, 12);
         if (status != 0) {
             return 1;
         }
-        if (strcmp(fname, filename) == 0 && buf[12] == dir) {
+        if (strcmp(fname, filename) == 0 && buf[13] == dir) {
             return i; // returns sector
         }
     }
@@ -153,11 +167,18 @@ int ls(){
 }
 
 int list_files(char dirname){
+    if (find_dir(dirname) == 1) {
+        return 1;
+    }
+    prints("File list:");
+    nl();
     for (int i = START_SECTOR; i < END_SECTOR; i++){
         char sBuf[512];
+        char filename[FILENAME_SIZE];
         disk_read(sBuf, i, 1);
-        if (sBuf[12] == dirname){
-            prints(sBuf);
+        if (sBuf[13] == dirname){
+            strncpy(filename, sBuf + 1, 12);
+            prints(filename);
             nl();
         }  
     }
@@ -185,6 +206,16 @@ int rmdir(char dirname){
     sBuf[0] = sBuf[0] - 1;
     disk_write(sBuf, DIR_SECTOR, 1);
     return 0; 
+}
+
+int rm(char *filename, char dir){
+    int sector;
+    if (sector = find_file(filename, dir) == 1) {
+        return 1;
+    }
+    char sBuf[512] = {0};
+    disk_write(sBuf, sector, 1);
+    return 0;
 }
 
 void newline() {

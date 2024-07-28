@@ -95,3 +95,13 @@ void free(void *ptr) {
     heap = heap - (int)ptr * sizeof(char);
     return;
 }
+
+char *strchr(const char *str, int c) {
+    while (*str) {
+        if (*str == c) {
+            return (char*)str;
+        }
+        str++;
+    }
+    return NULL;
+}

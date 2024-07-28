@@ -10,7 +10,7 @@ short OSS_ptr = 57; // OS Settings Sector
 char username[32];
 /*OS Sector
 0x00 - Taskbar color
-0x0f- 0x2f username, 0x17 reading address
+0x10- 0x30 username, 0x17 reading address
 */
 
 void os_main() {
@@ -18,7 +18,7 @@ void os_main() {
     if (disk_read(OS_Sector, OSS_ptr, 1) != 0) kernel_panic("Failed to load OS settings sector");
     taskbarColor = OS_Sector[0x00];
     for (int i = 0; i < 32; i++) {
-        username[i] = OS_Sector[0xf + i];
+        username[i] = OS_Sector[0x10 + i];
     }
     terminal();
 }
@@ -36,7 +36,7 @@ void setup(){
     prints("Username: ");
     gets(username);
     for (int i = 0; i < 32; i++) {
-        OS_Sector[0x0f + i] = username[i];
+        OS_Sector[0x10 + i] = username[i];
     }
     nl();
     OS_Sector[0x00] = BLUE;
@@ -59,7 +59,7 @@ void setup(){
 
 void terminal() {
     clt();
-    char prompt[40];
+    char prompt[40], parameter1[20], parameter2[20];
     int i = 0;
     prints("Welcome to ManuOS, ");
     prints(username);
@@ -125,7 +125,7 @@ void terminal() {
             prints("Change username: ");
             gets(username);
             for (int i = 0; i < 32; i++) {
-                OS_Sector[0x0f + i] = username[i];
+                OS_Sector[0x10 + i] = username[i];
             }
             if (disk_write(OS_Sector, OSS_ptr, 1) != 0) prints("Failed to write sector");
             nl();
@@ -140,21 +140,15 @@ void terminal() {
             nl();
         } else if (strcmp(prompt, "setup") == 0) {
             setup();
-        } else if (strcmp(prompt, "test") == 0) {
-            char tbuf[512] = {0};
-            strcpy(tbuf, "This is a test file");
-            if (create_file("Testfile", 'A', tbuf, 1) == 0){
-                prints("File created");
-            }
+        } else if (startsWith(prompt, "rd ") == 0) {
+            char filename[FILENAME_SIZE] = {0};
+            strncpy(filename, prompt + 3, strlen(prompt) - 3);
             char cbuf[512] = {0};
-            read_file("Testfile", 'A', cbuf);
+            read_file(filename, currentDir, cbuf);
             prints(cbuf);
-            strcpy(cbuf, "This is a second test file");
-            create_file("Testfiles", 'B', cbuf, 1);
-            read_file("Testfiles", 'B', tbuf);
-            prints(tbuf);
+            nl();
         } else if (startsWith(prompt, "read ") == 0) {
-            char filename[12] = {0};
+            char filename[FILENAME_SIZE] = {0};
             char dir = prompt[5];
             for (int i = 7; i < strlen(prompt); i++) {
                 filename[i - 7] = prompt[i];
@@ -164,7 +158,7 @@ void terminal() {
             prints(cbuf);
             nl();
         } else if (strcmp(prompt, "create") == 0) {
-            char filename[12] = {0};
+            char filename[FILENAME_SIZE] = {0};
             char dir;
             char data[DATA_SIZE] = {0};
             prints("Enter Filename: ");
