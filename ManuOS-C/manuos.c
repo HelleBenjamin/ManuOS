@@ -6,7 +6,7 @@ unsigned int cRow = 0;
 uint8_t taskbarColor;
 char cProgram[25];
 char OS_Sector[0x200]; // 512 bytes for os settings, starting at sector 38
-short OSS_ptr = 90;
+short OSS_ptr = 57; // OS Settings Sector
 char username[32];
 /*OS Sector
 0x00 - Taskbar color
@@ -193,6 +193,9 @@ void terminal() {
         } else if (startsWith(prompt, "cd ") == 0) {
             char dir = prompt[3];
             cd(dir);
+        } else if (startsWith(prompt, "rmdir") == 0) {
+            char dir = prompt[6];
+            rmdir(dir);
         }
         
     }

@@ -58,6 +58,7 @@ int mkdir(char dirname);
 int find_dir(char dirname);
 int ls();
 int cd(char dirname);
+int rmdir(char dirname);
 
 int init_fs();
 

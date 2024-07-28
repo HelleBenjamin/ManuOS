@@ -169,7 +169,18 @@ int list_dirs(){
         printc(dBuf[i+1]);
         newline();
     }
-    
+}
+
+int rmdir(char dirname){
+    if (find_dir(dirname) == 1) {
+        return 1;
+    }
+    char sBuf[512];
+    disk_read(sBuf, DIR_SECTOR, 1);
+    sBuf[sBuf[0]] = 0;
+    sBuf[0] = sBuf[0] - 1;
+    disk_write(sBuf, DIR_SECTOR, 1);
+    return 0; 
 }
 
 void newline() {
