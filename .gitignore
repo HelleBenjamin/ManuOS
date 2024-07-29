@@ -8,3 +8,11 @@ ManuOS-C/floppy.img
 ManuOS-C/osfloppy.img
 ManuOS-C/m_stdlib.o
 ManuOS-C/manuos.img
+ManuOS-C/build/boot.bin
+ManuOS-C/build/floppy.img
+ManuOS-C/build/kernel.o
+ManuOS-C/build/m_stdlib.o
+ManuOS-C/build/manuos.img
+ManuOS-C/build/manuos.o
+ManuOS-C/build/oskernel.bin
+ManuOS-C/build/s-image.bin

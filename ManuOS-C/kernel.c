@@ -2,8 +2,6 @@
 #include "m_stdlib.h"
 #include "manuos.h"
 
-extern void os_main(); // defined in manuos.c
-
 /* Copyright (C) 2024 Benjamin H. All rights reserved. */
 
 /** Kernel functions and syscalls ***/

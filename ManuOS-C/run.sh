@@ -1,24 +1,26 @@
 #!/bin/bash
 
-nasm -f bin -o boot.bin boot.asm
+mkdir -p build
+
+nasm -f bin -o build/boot.bin boot.asm
 
 #nasm -f elf -o kernel_asm.o kernel_asm.asm
 
-gcc -m16 -ffreestanding -c -o kernel.o kernel.c -fno-pic -nostdlib
-gcc -m16 -ffreestanding -c -o manuos.o manuos.c -fno-pic -nostdlib
-gcc -m16 -ffreestanding -c -o m_stdlib.o m_stdlib.c -fno-pic -nostdlib
+gcc -Ilibs -m16 -ffreestanding -c -o build/kernel.o kernel/kernel.c -fno-pic -nostdlib
+gcc -Ilibs -m16 -ffreestanding -c -o build/manuos.o os/manuos.c -fno-pic -nostdlib
+gcc -Ilibs -m16 -ffreestanding -c -o build/m_stdlib.o libs/m_stdlib.c -fno-pic -nostdlib
 
-ld -m elf_i386 -T link.ld -o kernel.bin manuos.o kernel.o m_stdlib.o --oformat binary -nostdlib
+ld -m elf_i386 -T link.ld -o build/oskernel.bin build/manuos.o build/kernel.o build/m_stdlib.o --oformat binary -nostdlib
 
-cat boot.bin kernel.bin > os-image.bin
+cat build/boot.bin build/oskernel.bin > obuild/s-image.bin
 
-dd if=/dev/zero of=floppy.img bs=512 count=2880
+dd if=/dev/zero of=build/floppy.img bs=512 count=2880
 #mkfs.fat -F 12 -n "MANUOS" floppy.img
-dd if=os-image.bin of=osfloppy.img bs=512 count=2880 conv=notrunc
+dd if=os-build/image.bin of=build/osfloppy.img bs=512 count=2880 conv=notrunc
 
-cat osfloppy.img floppy.img > manuos.img
+cat build/osfloppy.img build/floppy.img > build/manuos.img
 
-qemu-system-i386 -fda manuos.img #floppy
+qemu-system-i386 -fda build/manuos.img #floppy
 
 # Todo:
 # - Cleanup
