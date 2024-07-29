@@ -19,6 +19,7 @@ ManuOS is a hobby os written in C and X86 assembly. Its main goal is to be simpl
 - Dices
 - Calculator
 - Bouncing ball
+- Text editor
 ### Asm-edition
 - Wuf++ interpreter
 - Text editor

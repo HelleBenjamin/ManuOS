@@ -103,7 +103,6 @@ void terminal() {
             nl();
         } else if (startsWith(prompt, "wpp") == 0) {
             if (startsWith(prompt + 4, "-i") == 0) { //interpret file
-                prints("Interpreting:");
                 char filename[FILENAME_SIZE] = {0};
                 char program[512] = {0};
                 for (int i = 7; i < strlen(prompt); i++) filename[i - 7] = prompt[i];
@@ -208,7 +207,43 @@ void terminal() {
                 filename[i - 3] = prompt[i];
             }
             rm(filename, currentDir);
+        } else if (strcmp(prompt, "txt") == 0) {
+            txt_editor();
         }
+    }
+}
+
+void txt_editor() {
+    strcpy(cProgram, "Text Editor v1.2");
+    clrs();
+    prints("Ctrl + s to save and exit");
+    nl();
+    prints("Enter filename: ");
+    char filename[FILENAME_SIZE];
+    int i = 0;
+    gets(filename);
+    nl();
+    char tbuf[500] = {0};
+    read_file(filename, currentDir, tbuf);
+    prints(tbuf);
+    i = strlen(tbuf);
+    while(1) {
+        tbuf[i] = getc();
+        printc(tbuf[i]);
+        if (tbuf[i] == 0x08) {
+            i--;
+            printc(' ');
+            printc(0x08);
+            tbuf[i] = '\0';
+            i--;
+        }
+        if (tbuf[i] == 19) { // ctrl + s
+            tbuf[i] = '\0';
+            edit_file(filename, currentDir, tbuf);
+            clt();
+            break;
+        }
+        i++;        
     }
 }
 
@@ -347,6 +382,7 @@ void wpp_interpreter(int op, char *program) {
         };
         i++;
     }
+    nl();
     interpret:
     InterpretedProgram[i] = '=';
     bx = 0;
@@ -355,7 +391,6 @@ void wpp_interpreter(int op, char *program) {
     sp = 0xff;
     pc = 0;
     halt = 0;
-    nl();
     unsigned len = i;
     while (pc < len) {
         if(halt) break;

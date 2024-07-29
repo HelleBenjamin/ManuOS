@@ -125,16 +125,18 @@ int read_file(char *filename, char dir, char *buffer) {
 
 }
 
-int edit_file(char *filename, char dir, char *data, int size) {
-    char buf[SECTOR_SIZE * size];
+int edit_file(char *filename, char dir, char *data) {
+    char buf[SECTOR_SIZE];
 
     int sector = find_file(filename, dir);
     if (sector == 0) {
         return 1;
     }
-    int status = disk_read(buf, sector, size);
-    strncpy(buf, data, size);
-    status = disk_write(buf, sector, size);
+    int status = disk_read(buf, sector, 1);
+    for (int i = 15; i < SECTOR_SIZE; i++) {
+        buf[i] = data[i - 15];
+    }
+    status = disk_write(buf, sector, 1);
     if (status != 0) {
         return 1;
     }

@@ -33,5 +33,6 @@ void update_taskbar();
 void init_taskbar();
 void clrs(); // clear screen, should be used in os environment
 void clt(); // clear screen and initialize for terminal
+void txt_editor();
 
 #endif
