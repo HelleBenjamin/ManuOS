@@ -16,3 +16,8 @@ ManuOS-C/build/manuos.img
 ManuOS-C/build/manuos.o
 ManuOS-C/build/oskernel.bin
 ManuOS-C/build/s-image.bin
+ManuOS-C/build/image.bin
+ManuOS-C/build/os-image.bin
+ManuOS-C/build/osfloppy.img
+ManuOS-C/build/osfloppy.img
+ManuOS-C/build/usb-floppy.img

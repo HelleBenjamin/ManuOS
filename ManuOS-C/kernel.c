@@ -28,9 +28,12 @@ uint16_t nextSector;
 char currentDir;
 
 int init_fs() {
-    char fsbuf[512]; // 0x0 - Next sector, 0x1 - Current directory
-    if (disk_read(fsbuf, FS_SECTOR, 1) != 0) {
-        kernel_panic("Failed to load filesystem");
+    char fsbuf[512]; // 0x0 - Next sector, 0x1 - Current directory 1
+    int status = disk_read(fsbuf, FS_SECTOR, 1);
+    if (status != 0) {
+        prints("Failed to load filesystem");
+        printi(status);
+        sleepms(10000);
     }
     nextSector = fsbuf[0];
     currentDir = fsbuf[1];
@@ -239,6 +242,9 @@ asm(
     "   ret\n\t"
 );
 int disk_read(char *buffer, int sector, int num_sectors) {
+    if (sector == 0) {
+        return -3; // Prevent reading boot sector
+    }
     int status;
     int heads_per_cyl = 2;
     int sectors_per_track = 18;

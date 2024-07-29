@@ -6,7 +6,7 @@ unsigned int cRow = 0;
 uint8_t taskbarColor;
 char cProgram[25];
 char OS_Sector[0x200]; // 512 bytes for os settings, starting at sector 38
-short OSS_ptr = 57; // OS Settings Sector
+const short OSS_ptr = 57; // OS Settings Sector
 char username[32];
 /*OS Sector
 0x00 - Taskbar color
@@ -15,7 +15,11 @@ char username[32];
 
 void os_main() {
     init_fs();
-    if (disk_read(OS_Sector, OSS_ptr, 1) != 0) kernel_panic("Failed to load OS settings sector");
+    int status = disk_read(OS_Sector, OSS_ptr, 1);
+    if (status != 0){
+        prints("Failed to load OS settings sector");
+        printi(status);
+    }
     taskbarColor = OS_Sector[0x00];
     for (int i = 0; i < 32; i++) {
         username[i] = OS_Sector[0x10 + i];
@@ -97,7 +101,7 @@ void terminal() {
         } else if (strcmp(prompt, "help") == 0) {
             prints(TERMINAL_HELP_MSG);
             nl();
-        } else if (startsWith(prompt, "wpp ") == 0) {
+        } else if (startsWith(prompt, "wpp") == 0) {
             if (startsWith(prompt + 4, "-i") == 0) { //interpret file
                 prints("Interpreting:");
                 char filename[FILENAME_SIZE] = {0};
