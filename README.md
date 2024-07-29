@@ -10,6 +10,9 @@ ManuOS is a hobby os written in C and X86 assembly. Its main goal is to be simpl
 - Currently runs in real mode, planned to run in protected mode in the future
 - OS uses kernel system calls to interact with the hardware
 - Kernel can be customized for different architectures
+- Sector Based File System(SBSF)
+- Directories are only one character long
+- Filenames are limited to 12 characters
 ## Programs
 ### C-edition, recommended
 - Wuf++ interpreter
@@ -32,22 +35,22 @@ ManuOS is a hobby os written in C and X86 assembly. Its main goal is to be simpl
 3. In the OS terminal, type ```setup``` and follow the instructions, this needs to be done only once.
 
 ## Colors
-- **Black** - 0
-- **Blue** - 1
-- **Green** - 2
-- **Cyan** - 3
-- **Red** - 4
-- **Magenta** - 5
-- **Brown** - 6
-- **Light Gray** - 7
-- **Dark Gray** - 8
-- **Light Blue** - 9
-- **Light Green** - 10
-- **Light Cyan** - 11
-- **Light Red** - 12
-- **Light Magenta** - 13
-- **Yellow** - 14
-- **White** - 15
+- <span style="color:black">**Black**</span> - 0
+- <span style="color:blue">**Blue**</span> - 1
+- <span style="color:green">**Green**</span> - 2
+- <span style="color:cyan">**Cyan**</span> - 3
+- <span style="color:red">**Red**</span> - 4
+- <span style="color:magenta">**Magenta**</span> - 5
+- <span style="color:brown">**Brown**</span> - 6
+- <span style="color:lightgray">**Light Gray**</span> - 7
+- <span style="color:darkgray">**Dark Gray**</span> - 8
+- <span style="color:lightblue">**Light Blue**</span> - 9
+- <span style="color:lightgreen">**Light Green**</span> - 10
+- <span style="color:lightcyan">**Light Cyan**</span> - 11
+- <span style="color:orangered">**Light Red**</span> - 12
+- <span style="color:pink">**Light Magenta**</span> - 13
+- <span style="color:yellow">**Yellow**</span> - 14
+- <span style="color:white">**White**</span> - 15
 
 ## Wuf++ language
 ManuOS comes with a Wuf++ interpreter. See more on [here](https://github.com/Pepe-57/wpp). 
@@ -85,6 +88,7 @@ ManuOS comes with a Wuf++ interpreter. See more on [here](https://github.com/Pep
 # Changelog
 ### ManuOS 0.0.4c-dev
 - Major change: Added a simple file system
+- Added more commands
 - Small changes/bugfixes
 ### ManuOS 0.0.3c-release
 - Stable release

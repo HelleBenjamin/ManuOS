@@ -2,7 +2,7 @@
 #define MANUOS_H
 
 #define OS_VERSION "ManuOS 0.0.4c-dev" 
-#define TERMINAL_HELP_MSG "Commands: version, help, wpp, dices, clear, calculator, ball, echo, taskbar, username, restart, color, setup, txt, read <dir> <filename>, create, mkdir <dir>, list <dir>, cd <dir>, rmdir <dir>, ls, rm <filename>"
+#define TERMINAL_HELP_MSG "Commands: version, help, wpp, dices, clear, calculator, ball, echo, taskbar, username, restart, color, setup, txt, read <dir> <filename>, create, mkdir <dir>,  list <dir>, dir, cd <dir>, rmdir <dir>, ls, rm <filename>"
 
 #define BLACK 0x0
 #define BLUE 0x1
@@ -24,7 +24,7 @@
 void nl();
 void os_main();
 void terminal();
-void wpp_interpreter();
+void wpp_interpreter(int op, char *program);
 void dices();
 void calculator();
 void bouncing_ball();
@@ -33,6 +33,5 @@ void update_taskbar();
 void init_taskbar();
 void clrs(); // clear screen, should be used in os environment
 void clt(); // clear screen and initialize for terminal
-void text_editor();
 
 #endif

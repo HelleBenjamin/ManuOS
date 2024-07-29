@@ -60,8 +60,8 @@ int ls();
 int cd(char dirname);
 int rmdir(char dirname);
 int rm(char *filename, char dir);
-
 int init_fs();
+int poke(int *addr, int value);
 
 char getCurrentDir();
 

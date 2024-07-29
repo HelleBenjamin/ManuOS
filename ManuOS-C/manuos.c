@@ -97,8 +97,15 @@ void terminal() {
         } else if (strcmp(prompt, "help") == 0) {
             prints(TERMINAL_HELP_MSG);
             nl();
-        } else if (strcmp(prompt, "wpp") == 0) {
-            wpp_interpreter();
+        } else if (startsWith(prompt, "wpp ") == 0) {
+            if (startsWith(prompt + 4, "-i") == 0) { //interpret file
+                prints("Interpreting:");
+                char filename[FILENAME_SIZE] = {0};
+                char program[512] = {0};
+                for (int i = 7; i < strlen(prompt); i++) filename[i - 7] = prompt[i];
+                read_file(filename, currentDir, program);
+                wpp_interpreter(1, program);
+            } else wpp_interpreter(0, 0);
         } else if (strcmp(prompt, "dices") == 0) {
             dices();
         } else if (strcmp(prompt, "clear") == 0) {
@@ -198,18 +205,9 @@ void terminal() {
             }
             rm(filename, currentDir);
         }
-        
     }
 }
 
-void text_editor() {
-    strcpy(cProgram, "Text Editor");
-    clrs();
-    while (1) {
-        clrs();
-        nl();
-    }
-}
 
 int diceroll() {
     return random(1, 6);
@@ -297,16 +295,31 @@ void dices(){
     }
 }
 
-void wpp_interpreter() {
+void wpp_interpreter(int op, char *program) {
+    char InterpretedProgram[0x200] = {0};
+    int i = 0;
+    switch (op) //0 open interpreter, 1 interpret file
+    {
+    case 0:
+        goto normal;
+        break;
+    case 1:
+        strcpy(InterpretedProgram, program);
+        i = strlen(InterpretedProgram);
+        goto interpret;
+        break;
+    
+    default:
+        break;
+    }
+    normal:
     strcpy(cProgram, "Wuf++ Interpreter");
     clrs();
     prints("Press ESC to exit, enter to execute the code");
     nl();
-    int i = 0;
     int halt, pc = 0;
     unsigned int stack[0xff] = {0};
     short sp, bx, cx, dx;
-    char InterpretedProgram[0x200] = {0};
     loop:
     for (i = 0; i < 0x200; i++) InterpretedProgram[i] = 0;
     i = 0;
@@ -330,6 +343,7 @@ void wpp_interpreter() {
         };
         i++;
     }
+    interpret:
     InterpretedProgram[i] = '=';
     bx = 0;
     dx = 0;
@@ -338,7 +352,6 @@ void wpp_interpreter() {
     pc = 0;
     halt = 0;
     nl();
-    interpret:
     unsigned len = i;
     while (pc < len) {
         if(halt) break;
@@ -452,6 +465,9 @@ void wpp_interpreter() {
         pc++;
     }
     nl();
+    if (op == 1) {
+        return;
+    }
     goto loop;
 }
 

@@ -105,3 +105,44 @@ char *strchr(const char *str, int c) {
     }
     return NULL;
 }
+
+int atoi(const char *str) {
+    int num = 0;
+    while (*str) {
+        num = num * 10 + (*str - '0');
+        str++;
+    }
+    return num;
+}
+
+long int strtol(const char *str, char **endptr, int base) {
+    long int num = 0;
+    int sign = 1;
+    if (*str == '+' || *str == '-') {
+        if (*str == '-') {
+            sign = -1;
+        }
+        str++;
+    }
+    while (*str) {
+        int digit;
+        if (*str >= '0' && *str <= '9') {
+            digit = *str - '0';
+        } else if (*str >= 'a' && *str <= 'z') {
+            digit = *str - 'a' + 10;
+        } else if (*str >= 'A' && *str <= 'Z') {
+            digit = *str - 'A' + 10;
+        } else {
+            break;
+        }
+        if (digit >= base) {
+            break;
+        }
+        num = num * base + digit;
+        str++;
+    }
+    if (endptr) {
+        *endptr = (char*)str;
+    }
+    return sign * num;
+}

@@ -218,6 +218,11 @@ int rm(char *filename, char dir){
     return 0;
 }
 
+int poke(int *addr, int value) {
+    *addr = value;
+    return 0;
+}
+
 void newline() {
     asm(
         "mov $0x0a, %al\n\t"
