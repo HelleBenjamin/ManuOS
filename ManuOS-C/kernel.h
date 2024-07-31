@@ -9,7 +9,7 @@
 #define SPACE 0x20
 #define DEL 0x7f
 #define ESC 0x1b
-#define KERNEL_VERSION "Puppy-kernel 0.0.4c-dev"
+#define KERNEL_VERSION "Puppy-kernel 0.0.4c"
 
 #define SECTOR_SIZE 512
 #define FILENAME_SIZE 12

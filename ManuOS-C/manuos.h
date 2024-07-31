@@ -1,7 +1,7 @@
 #ifndef MANUOS_H
 #define MANUOS_H
 
-#define OS_VERSION "ManuOS 0.0.4c-dev" 
+#define OS_VERSION "ManuOS 0.0.4c-pre-release" 
 #define TERMINAL_HELP_MSG "Commands: version, help, wpp, dices, clear, calculator, ball, echo, taskbar, username, restart, color, setup, txt, read <dir> <filename>, create, mkdir <dir>,  list <dir>, dir, cd <dir>, rmdir <dir>, ls, rm <filename>"
 
 #define BLACK 0x0
