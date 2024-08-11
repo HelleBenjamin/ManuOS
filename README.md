@@ -1,5 +1,4 @@
 ![Terminal](manuos1.png)
-# DEV BRANCH!
 # ManuOS
 ManuOS is a hobby os written in C and X86 assembly. Its main goal is to be simple and easy to use. It currently supports only X86 architecture. Arm support is planned in the future. 
 ## Features
@@ -32,7 +31,7 @@ ManuOS is a hobby os written in C and X86 assembly. Its main goal is to be simpl
 
 ## How to build
 1. Change directory to the edition you want to build, for example: ```cd ManuOS-C```
-2. Build the edition: type ```make```
+2. Build the edition: type ```make``` (in windows ```mingw32-make```)
 3. Run the edition: type ```qemu-system-i386 -fda build/manuos.img``` 
 3. In the OS terminal, type ```setup``` and follow the instructions, this needs to be done only once.
 
