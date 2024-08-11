@@ -1,8 +1,8 @@
 bits 16
 
 section .data
-    version db 'ManuOS 0.0.1-alpha, Puppy-kernel 0.0.1, Asm-edition', 0
-    help db 'Commands: m(manu), v(version), h(help), t(text editor), w(wuf++ interpreter)', 0
+    version db 'ManuOS 0.0.2a, Puppy-kernel 0.0.2a, Asm-edition', 0
+    help db 'Commands: m(manu), v(version), h(help), t(text editor), w(wuf++ interpreter), c(clear)', 0
     not_found db 'Command not found: ', 0
     txt_msg db 'Text editor v1.2 ', 0
     escmsg db 'Press ESC to exit', 0
@@ -16,11 +16,11 @@ section .bss
 
 section .text
     global main
-    extern read 
-    extern print_chr
-    extern print_str
-    extern newline
-    extern clrscr
+    extern getchar 
+    extern printc
+    extern prints
+    extern nl
+    extern cls
     extern halt
 
 main:
@@ -29,13 +29,13 @@ main:
 
 terminal:
     mov al, '>'
-    call print_chr
+    call printc
     mov di, cmd_buffer
     .tloop:
-        call read
+        call getchar
         cmp al, 0
         je halt ; If no more input, stop the program
-        call print_chr
+        call printc
         mov [di], al
         inc di
         cmp al, 0x08
@@ -67,48 +67,53 @@ handle_commands:
     mov bl, 'w'
     cmp bl, [cmd_buffer]
     je .wpp_command
+    mov bl, 'c'
+    cmp bl, [cmd_buffer]
+    je .clear_command
     mov bx, not_found
-    call print_str
+    call prints
     mov bx, cmd_buffer
-    call print_str
-    call newline
+    call prints
+    call nl
     ret
 
     ;Handle commands
     .manu_command:
-        call newline
+        call nl
         mov bx, manumsg
-        call print_str
-        call newline
+        call prints
+        call nl
         jmp terminal
     .version_command:
-        call newline
+        call nl
         mov bx, version
-        call print_str
-        call newline
+        call prints
+        call nl
         jmp terminal
     .help_command:
-        call newline
+        call nl
         mov bx, help
-        call print_str
-        call newline
+        call prints
+        call nl
         jmp terminal
-
+    .clear_command:
+        call cls
+        jmp terminal
     .wpp_command:
         call wpp_interpreter
         jmp terminal
 
 ; TEXT EDITOR
 init_text_editor:
-    call clrscr
+    call cls
     mov bx, txt_msg
-    call print_str
+    call prints
     mov bx, escmsg
-    call print_str
-    call newline
+    call prints
+    call nl
 text_editor:
-    call read
-    call print_chr
+    call getchar
+    call printc
     call check_txt_functions
     jmp text_editor
 
@@ -116,52 +121,26 @@ check_txt_functions:
     .if_esc:
         cmp al, 0x1b
         jne .if_enter
-        call clrscr
+        call cls
         jmp terminal
     .if_enter:
         cmp al, 0x0d
         jne .no_backspace
         mov al, 0x0a
-        call print_chr
+        call printc
         mov al, 0x0d
-        call print_chr
+        call printc
         .no_backspace:
             ret
-; Wuf++ - Low-level language
-; Registers that are used:
-; bl - main register
-; cx - pointer, not the program counter
-; Example: #H.#e.#l.#l.#o.
-;Syntax:
-; + - increment main register
-; - - decrement main register
-; } - push main register
-; { - pop main register
-; . - print main register
-; , - read to the main register
-; & - jump to location pointed by pointer
-; [ - pc = pc - cx
-; ] - pc = pc + cx
-; ! - invert main register
-; > - increment pointer
-; < - decrement pointer
-; $ - print pointer
-; #<char> - load char to main register
-; ( - loop start, decrement pointer and loop until pointer = 0
-; ) - loop end
-; " - swap registers
-; %<char> - compare main register with char, jump if equal to location pointed by pointer
-; = - halt
-; / - add bx and cx, bx = bx + cx
-; \ - sub bx and cx, bx = bx - cx
-; @ - load zero to bx, bx = 0
-; ^ - swap bl with bh, bh <-> bl
 global wpp_interpreter
 wpp_interpreter:
     .init_interpreter:
+        push bp
+        mov bp, sp
+        sub sp, 0x200
         call cls
         mov bx, wppmsg
-        call print_str
+        call prints
         call nl
         mov di, wpp_buffer
         mov ecx, 0x100
@@ -173,7 +152,7 @@ wpp_interpreter:
         call getchar
         mov [di], al
         inc di
-        call printchr
+        call printc
         cmp al, 0x0d
         je .handle_enter
         cmp al, 0x08
@@ -208,7 +187,7 @@ wpp_interpreter:
         cmp al, '.'
         je .if_print
         cmp al, ','
-        je .if_read
+        je .if_getchar
         cmp al, '&'
         je .if_jump
         cmp al, '['
@@ -244,11 +223,11 @@ wpp_interpreter:
         cmp al, '^'
         je .if_swp_bh_bl
         jne .interpret
-        .if_read:
-            .read_loop:
+        .if_getchar:
+            .getchar_loop:
                 call getchar
                 cmp al, 0
-                je .read_loop
+                je .getchar_loop
             mov bl, al
             jmp .interpret
         .if_plus:
@@ -265,7 +244,7 @@ wpp_interpreter:
             jmp .interpret
         .if_print:
             mov al, bl
-            call printchr
+            call printc
             jmp .interpret
         .if_jump:
             mov di, cx
@@ -287,7 +266,7 @@ wpp_interpreter:
             jmp .interpret
         .if_print_pointer:
             mov al, cl
-            call printchr
+            call printc
             jmp .interpret
         .if_load_char:
             mov bl, [di]
@@ -330,10 +309,12 @@ wpp_interpreter:
     .end_interpreter:
         call nl
         mov bx, fmsg
-        call print_str
+        call prints
         .l1:
             call getchar
             cmp al, 0x0d
             jne .l1
         call cls
+        mov sp, bp
+        pop bp
         ret

@@ -2,14 +2,12 @@ BITS 16
 ORG 0x7C00 ; Don't modify this, necessary for the bootloader
 
 start:
-    ; Setup segment registers
     xor ax, ax
     mov ds, ax
     mov es, ax
     mov ss, ax
     mov sp, 0x7c00
 
-    ; Load the kernel from disk
     mov ah, 0x02
     mov al, 10
     mov ch, 0
@@ -19,7 +17,6 @@ start:
     int 0x13
     jc disk_error
 
-    ; Jump to the loaded kernel
     push ax
     mov al, 'O'
     mov ah, 0x0e
