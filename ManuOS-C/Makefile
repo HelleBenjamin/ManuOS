@@ -17,6 +17,7 @@ FLOPPY_IMG = build/floppy.img
 OS_FLOPPY_IMG = build/osfloppy.img
 KERNEL_O = build/kernel.o
 MANUOS_O = build/manuos.o
+SIMPLEGL_O = build/simplegl.o
 M_STDLIB_O = build/m_stdlib.o
 S_IMAGE_BIN = build/s-image.bin
 
@@ -37,8 +38,11 @@ $(MANUOS_O): manuos.c
 $(M_STDLIB_O): m_stdlib.c
 	$(GCC) $(GCCFLAGS) -o $(M_STDLIB_O) m_stdlib.c
 
-$(OS_KERNEL_BIN): $(KERNEL_O) $(MANUOS_O) $(M_STDLIB_O)
-	$(LD) $(LDFLAGS) -o $(OS_KERNEL_BIN) $(MANUOS_O) $(KERNEL_O) $(M_STDLIB_O)
+$(SIMPLEGL_O): simplegl.c
+	$(GCC) $(GCCFLAGS) -o $(SIMPLEGL_O) simplegl.c
+
+$(OS_KERNEL_BIN): $(KERNEL_O) $(MANUOS_O) $(M_STDLIB_O) $(SIMPLEGL_O)
+	$(LD) $(LDFLAGS) -o $(OS_KERNEL_BIN) $(MANUOS_O) $(KERNEL_O) $(M_STDLIB_O) $(SIMPLEGL_O)
 
 $(S_IMAGE_BIN): $(BOOT_BIN) $(OS_KERNEL_BIN)
 	$(CAT) $(BOOT_BIN) $(OS_KERNEL_BIN) > $(S_IMAGE_BIN)

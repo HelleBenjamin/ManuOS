@@ -146,3 +146,10 @@ long int strtol(const char *str, char **endptr, int base) {
     }
     return sign * num;
 }
+
+int abs(int n) {
+    if (n < 0) {
+        return -n;
+    }
+    return n;
+}

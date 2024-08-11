@@ -29,5 +29,6 @@ void free(void *ptr);
 char *strchr(const char *str, int c);
 int atoi(const char *str);
 long int strtol(const char *str, char **endptr, int base);
+int abs(int n);
 
 #endif

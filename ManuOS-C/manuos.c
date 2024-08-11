@@ -1,6 +1,7 @@
 #include "kernel.h"
 #include "manuos.h"
 #include "m_stdlib.h"
+#include "simplegl.h"
 
 unsigned int cRow = 0;
 uint8_t taskbarColor;
@@ -15,6 +16,7 @@ char username[32];
 
 void os_main() {
     init_fs();
+    initSGL();
     int status = disk_read(OS_Sector, OSS_ptr, 1);
     if (status != 0){
         prints("Failed to load OS settings sector");
@@ -209,6 +211,10 @@ void terminal() {
             rm(filename, currentDir);
         } else if (strcmp(prompt, "txt") == 0) {
             txt_editor();
+        } else if (strcmp(prompt, "testgl") == 0) {
+            SGLdrawSquare(30, 10, 10, 0x0F);
+            SGLdrawLine(30, 10, 40, 20, 0x04);
+            SGLdrawSquare(40, 10, 10, 0x0A);
         }
     }
 }

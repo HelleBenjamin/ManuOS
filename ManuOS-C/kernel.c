@@ -483,7 +483,10 @@ void WriteCharacter(unsigned char c, unsigned char forecolour, unsigned char bac
 }
 
 void WriteGpixel(unsigned char backcolour, int x, int y){
-    WriteCharacter(' ', 0xf, backcolour, x, y);
+    short attrib = (backcolour << 4) | 0xf;
+    volatile short * where;
+    where = (volatile short *)0xB8000 + (y * 80 + x) ;
+    *where = ' ' | (attrib << 8);
 }
 
 void restart() {
