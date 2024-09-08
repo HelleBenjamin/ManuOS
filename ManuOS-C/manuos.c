@@ -65,7 +65,7 @@ void setup(){
 
 void terminal() {
     clt();
-    char prompt[40], parameter1[20], parameter2[20];
+    char prompt[40];
     int i = 0;
     prints("Welcome to ManuOS, ");
     prints(username);

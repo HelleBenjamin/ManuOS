@@ -1,6 +1,8 @@
 #ifndef SIMPLEGL_H
 #define SIMPLEGL_H
 
+#define SGL_VERSION 01
+
 #define MAX_Y 25
 #define MAX_X 80
 

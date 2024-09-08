@@ -7,7 +7,7 @@
 /** Kernel functions and syscalls ***/
 
 /* ManuOS filesystem, SBFS-4 (Sector Based File System)
-Starts at sector 60. Thing that must be defined: Sector size, number of files, filesystem entries and start sector
+Starts at sector 60. Things that must be defined: Sector size, number of files, filesystem entries and start sector
  - Status, 1 byte, 1 = Taken, 0 = Available
  - Filename, 12 bytes, example: text
  - Directory, 1 byte, example: A
@@ -26,6 +26,11 @@ Root /
 
 uint16_t nextSector;
 char currentDir;
+
+
+void update_sys(){ //tool for update the os, doesn't overwrite user data
+    //TODO
+}
 
 int init_fs() {
     char fsbuf[512]; // 0x0 - Next sector, 0x1 - Current directory 1

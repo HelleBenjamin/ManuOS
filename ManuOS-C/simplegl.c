@@ -38,6 +38,5 @@ void SGLdrawLine(int x1, int y1, int x2, int y2, int color) {
             y1--;
         }
     }
+    return;
 }
-
-
