@@ -1,6 +1,6 @@
 ![Terminal](manuos1.png)
 # ManuOS
-ManuOS is a hobby os written in C and X86 assembly. Its main goal is to be simple and easy to use. It currently supports only X86 architecture. Arm support is planned in the future. 
+ManuOS is a hobby os written in C and X86 assembly. Its main goal is to be simple and easy to use. It currently supports only X86 architecture. Arm support is planned in the future. Planned to replace old 16-bit kernel with new [32-bit kernel](https://github.com/HelleBenjamin/Lanskern)(experimetal).
 ## Features
 - Two editions, C and asm
 - Open source
@@ -54,7 +54,7 @@ ManuOS is a hobby os written in C and X86 assembly. Its main goal is to be simpl
 - <span style="color:white">**White**</span> - 15
 
 ## Wuf++ language
-ManuOS comes with a Wuf++ interpreter. See more on [here](https://github.com/Pepe-57/wpp). 
+ManuOS comes with a Wuf++ interpreter. See more on [here](https://github.com/HelleBenjamin/wpp). 
 ### Registers:
 - **bx** - main register, bl mainly used
 - **cx** - main pointer
